@@ -1,0 +1,24 @@
+{
+  "name": "kaskus/kaskus-php-sdk",
+  "description": "Kaskus SDK for PHP",
+  "keywords": [
+    "kaskus",
+    "sdk"
+  ],
+  "type": "library",
+  "require": {
+    "php": ">=5.4.0",
+    "guzzlehttp/guzzle": "5.2.0",
+    "guzzlehttp/oauth-subscriber": "0.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0",
+    "squizlabs/php_codesniffer": "2.*",
+    "phpmd/phpmd": "@stable"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kaskus\\": "src/Kaskus/"
+    }
+  }
+}
