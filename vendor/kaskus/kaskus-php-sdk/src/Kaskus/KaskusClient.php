@@ -86,7 +86,7 @@ class KaskusClient extends \GuzzleHttp\Client
         if (!$this->authenticatedOauthListener) {
             throw new KaskusClientException('You have to set credentials with authorized request token!');
         }
-
+        #echo 'access token';
         $response = $this->get('accesstoken');
         $tokenResponse = $response->getBody()->getContents();
         parse_str($tokenResponse, $accessToken);

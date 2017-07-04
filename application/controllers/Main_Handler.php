@@ -1,8 +1,12 @@
 <?php
 
+include 'User_Session.php';
+include_once 'Sender.php';
+
 class Main_Handler {
 
 	public $content;
+	public $session;
 
 	public function __construct($content) {
 
@@ -11,17 +15,18 @@ class Main_Handler {
 
 	public function handleReceivedMessage() {
 
-		if ($message == 'halo') {
+		if ($this->content['message'] == 'halo') {
 
-			#sendReply($user, 'Hai '.$user->username.'!');
+			$sender = new Sender;
+			$sender->sendReply('Hai '.$this->content['user']->username.'!');
 			return;
 		}
 
-		$session = new User_Session($content);
+		$this->session = new User_Session($this->content);
 
-		if ($session->status === 'logged_on') {
+		if ($this->session->status === 'logged_on') {
 
-			mainFunction($content, $session);
+			mainFunction();
 
 		} else {
 
@@ -29,8 +34,8 @@ class Main_Handler {
 		}
 	}
 
-	public function mainFunction($content, $session) {
+	public function mainFunction() {
 
-		#Hello world
+		$sender->sendReply('Halo '.$this->content['user']->username.'!');
 	}
 }

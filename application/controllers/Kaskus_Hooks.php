@@ -2,6 +2,7 @@
 
 include 'User.php';
 include 'Bot_Account.php';
+include 'Main_Handler.php';
 
 class Kaskus_Hooks extends CI_Controller {
 
@@ -16,12 +17,12 @@ class Kaskus_Hooks extends CI_Controller {
 			$httpDate 		= $header['Date'];
 			$signature 		= $header["Obrol-signature"];
 
-			if ($signature == generateKaskusBotSignature($bot_account->hookSecret, $httpBody, $httpDate)) {
+			if ($signature == $this->generateKaskusBotSignature($bot_account->hookSecret, $httpBody, $httpDate)) {
 
 				$body 			= json_decode($httpBody);
 				$user 			= new User($body->from, $body->fromPlain);
 				$message 		= $body->body;
-				$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message];
+				$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message, 'redirect' => false];
 				$handler       	= new Main_Handler($content);
 				
 				$handler->handleReceivedMessage();
@@ -30,18 +31,41 @@ class Kaskus_Hooks extends CI_Controller {
 
 			else {
 
-				echo 'failed on hook';
+				echo 'failed on chat hook';
 			}
 		}
 
 	}
 
-	function generateKaskusBotSignature($hookSecret, $httpBody, $httpDate) {
+	public function generateKaskusBotSignature($hookSecret, $httpBody, $httpDate) {
     	
     	$stringToEncode = $httpDate . $httpBody;
     	$hashedString 	= base64_encode(hash_hmac('sha256', $stringToEncode, $hookSecret, true));
     	
         return $hashedString;
 
+	}
+
+	public function main_hook() {
+
+		if ($this->input->server('REQUEST_METHOD') == 'GET') {
+
+			$oauth_token 	= $this->input->get('oauth_token', TRUE);
+			$oauth_verifier = $this->input->get('oauth_verifier', TRUE);
+			$token 			= $this->input->get('token', TRUE);
+
+			#test
+			var_dump($oauth_token);
+			var_dump($oauth_verifier);
+			var_dump($token);
+
+			$bot_account	= new Bot_Account;
+			$user 			= new User($oauth_token, $oauth_verifier);
+			$message 		= $token;
+			$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message, , 'redirect' => true];
+			$session 		= new User_Session($content);
+			$session->authorizeSession();
+
+		}
 	}   
 }

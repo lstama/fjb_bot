@@ -19,6 +19,18 @@ class Session_model extends CI_Model {
 		return $query->row_array();
 	}
 
+	public function find_token($token = false) {
+
+		if ($token === false) {
+
+			$query = $this->db->get('sessions');
+			return $query->result_array();
+		}
+
+		$query = $this->db->get_where('sessions', array('token' => $token));
+		return $query->row_array();
+	}
+
 	public function create_session($data = null){
 
 		$data['last_change'] = time();
