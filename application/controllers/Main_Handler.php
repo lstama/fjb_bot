@@ -26,7 +26,7 @@ class Main_Handler {
 
 		if ($this->session->status === 'logged_on') {
 
-			mainFunction();
+			$this->mainFunction();
 
 		} else {
 
@@ -36,6 +36,7 @@ class Main_Handler {
 
 	public function mainFunction() {
 
-		$sender->sendReply('Halo '.$this->content['user']->username.'!');
+		$sender = new Sender;
+		$sender->sendReply('Halo '.$this->session->logged_on_user.'!');
 	}
 }

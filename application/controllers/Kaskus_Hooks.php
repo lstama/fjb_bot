@@ -54,15 +54,10 @@ class Kaskus_Hooks extends CI_Controller {
 			$oauth_verifier = $this->input->get('oauth_verifier', TRUE);
 			$token 			= $this->input->get('token', TRUE);
 
-			#test
-			var_dump($oauth_token);
-			var_dump($oauth_verifier);
-			var_dump($token);
-
 			$bot_account	= new Bot_Account;
-			$user 			= new User($oauth_token, $oauth_verifier);
+			$user 			= new User($oauth_verifier, $oauth_token);
 			$message 		= $token;
-			$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message, , 'redirect' => true];
+			$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message, 'redirect' => true];
 			$session 		= new User_Session($content);
 			$session->authorizeSession();
 

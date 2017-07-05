@@ -49,7 +49,7 @@ class Sender extends CI_Controller {
 
 	public function sendMessage($bot_account, $user, $message) {
 
-    	$auth = basicAuthHeader($bot_account->username, $bot_account->password);
+    	$auth = $this->basicAuthHeader($bot_account->username, $bot_account->password);
 		
 		$content_type  = "application/json";
 
@@ -59,7 +59,7 @@ class Sender extends CI_Controller {
 		$body['sendList']		 = array($recipients);
 		$body 					 = json_encode($body);
 
-		$result = sendToChatApi($auth, $content_type, $body);
+		$result = $this->sendToChatApi($auth, $content_type, $body);
 
 	}
 
