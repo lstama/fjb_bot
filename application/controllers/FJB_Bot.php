@@ -21,14 +21,12 @@ class FJB_Bot extends CI_Controller {
 		    case '/menu':
 		        $this->menu();
 		        break;
+		        
 		    case '/alamat':
 		        $alamat = new Alamat($this->session);
 		        $alamat->main($command[1]);
 		        break;
-		    // case label3:
-		    //     code to be executed if n=label3;
-		    //     break;
-		    // ...
+
 		    default:
 		        $this->lastSessionSpecific();
 		}
@@ -49,22 +47,13 @@ class FJB_Bot extends CI_Controller {
 
 	public function lastSessionSpecific() {
 
-		#echo 'lel';
 		$last_session = explode('_', $this->session->last_session, 2);
-		#var_dump($last_session);
 		switch ($last_session[0]) {
 		    case 'alamat':
-		        #echo $last_session[1];
 		        $alamat = new Alamat($this->session);
 		        $alamat->lastSessionSpecific($last_session[1]);
 		        break;
-		    // case label2:
-		    //     code to be executed if n=label2;
-		    //     break;
-		    // case label3:
-		    //     code to be executed if n=label3;
-		    //     break;
-		    // ...
+
 		    default:
 		        $this->unrecognizedCommand();
 		}
@@ -108,7 +97,7 @@ class FJB_Bot extends CI_Controller {
     		$response =  $exception->getMessage();
 		} 
 		catch (\Exception $exception) {
-    		// some other error occured
+    		 // some other error occured
     		$response =  $exception->getMessage();
 		}
 

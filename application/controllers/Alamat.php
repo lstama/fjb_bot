@@ -27,10 +27,7 @@ class Alamat extends CI_Controller {
 		    case 'create':
 		        $this->startCreate();
 		        break;
-		    // case label3:
-		    //     code to be executed if n=label3;
-		    //     break;
-		    // ...
+
 		    default:
 		        $this->unrecognizedCommand();
 		}
@@ -42,34 +39,30 @@ class Alamat extends CI_Controller {
 		$last_session = explode('_', $last_session, 2);
 		switch ($last_session[0]) {
 		    case 'create':
-		        $this->createSession($last_session[1]);
+		        $this->createCreateSession($last_session[1]);
 		        break;
-		    // case label2:
-		    //     code to be executed if n=label2;
-		    //     break;
-		    // case label3:
-		    //     code to be executed if n=label3;
-		    //     break;
-		    // ...
+
 		    default:
 		        $this->unrecognizedCommand();
 		}
 	}
 
-	public function createSession($last_session) {
+	public function createCreateSession($last_session) {
 
 		$last_session = explode('_', $last_session, 2);
 		switch ($last_session[0]) {
 		    case 'label':
 		        $this->createLabel();
 		        break;
-		    // case label2:
-		    //     code to be executed if n=label2;
-		    //     break;
-		    // case label3:
-		    //     code to be executed if n=label3;
-		    //     break;
-		    // ...
+
+		    case 'nama':
+		        $this->createNama();
+		        break;
+
+		    case 'telp':
+		        $this->createTelp();
+		        break;
+
 		    default:
 		        $this->unrecognizedCommand();
 		}
@@ -108,7 +101,6 @@ class Alamat extends CI_Controller {
 
 	public function createLabel() {
 
-		#echo 'here';
 		$label = $this->session->content['message'];
 		$data = ['label' => $label];
 		$this->load->model('create_alamat_model');
@@ -120,7 +112,47 @@ class Alamat extends CI_Controller {
 		$sender->sendReply('Silakan masukkan nama tujuan pengiriman.');
 	}
 
+	public function createNama() {
 
+		$nama = $this->session->content['message'];
+		$data = ['nama' => $nama];
+		$this->load->model('create_alamat_model');
+		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		
+		#ke telp
+		$this->session->setLastSession('alamat_create_telp');
+		$sender = new Sender();
+		$sender->sendReply('Silakan masukkan nomor handphone tujuan pengiriman.');
+	}
+
+	public function createTelp() {
+
+		$telp = $this->session->content['message'];
+		$sender = new Sender();
+
+		if ((! is_numeric($telp)) or (count($telp) > 13)) {
+
+			#not valid
+			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
+			$i['interactive'] = $sender->interactive(null, 'Nomor Tidak Valid', "Silakan masukkan nomor yang valid atau kembali ke menu utama.", $b, null);
+		
+			$sender->sendReply($i);
+			return;
+		}
+
+		$data = ['telp' => $telp];
+		$this->load->model('create_alamat_model');
+		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		
+		#ke nama
+		$this->session->setLastSession('alamat_create_provinsi');
+		$this->sendProvinceList();
+	}
+
+	public function sendProvinceList() {
+
+		#TODO;
+	}
 
 	public function daftarAlamat() {
 
@@ -131,12 +163,10 @@ class Alamat extends CI_Controller {
 		#Retrieve success
 		$sender = new Sender();
 
-		//var_dump($response);
 		$counter = 0; #maximum counter = 10
 		$i['interactives'] = [];
 		foreach ($response['data'] as $a) {
 
-			//var_dump($a);
 			$counter += 1;
 			if ($counter == 11) break;
 
@@ -148,7 +178,6 @@ class Alamat extends CI_Controller {
 		}
 
 		if ($counter == 0) $i = "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.";
-		//$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		$sender->sendReply($i);
 		return;
 	}
@@ -162,7 +191,6 @@ class Alamat extends CI_Controller {
 		#Retrieve success
 		$sender = new Sender();
 
-		//var_dump($response);
 		$no_alamat = -1;
 		$result = [];
 		foreach ($response['data'] as $k => $a) {
@@ -183,16 +211,13 @@ class Alamat extends CI_Controller {
 		}
 
 		#get kecamatan
-		#echo $result['area_id'];
 		$kecamatan = $this->getArea($result['area_id']);
 		if (! $kecamatan['success']) return;
 		$kecamatan = $kecamatan['result'];
-		#echo 'here';
 		#get kota
 		$kota = $this->getCity($result['city_id']);
 		if (! $kota['success']) return;
 		$kota = $kota['result'];
-
 		#get provinsi
 		$provinsi = $this->getProvince($result['province_id']);
 		if (! $provinsi['success']) return;
@@ -202,7 +227,6 @@ class Alamat extends CI_Controller {
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
-		//$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		return;
 	}
 
