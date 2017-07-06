@@ -2,6 +2,7 @@
 
 include 'User_Session.php';
 include_once 'Sender.php';
+include_once 'FJB_Bot.php';
 
 class Main_Handler {
 
@@ -26,17 +27,13 @@ class Main_Handler {
 
 		if ($this->session->status === 'logged_on') {
 
-			$this->mainFunction();
+			#call the bot
+			$bot = new FJB_Bot($this->session);
 
 		} else {
 
-			#Send authorize url
+			#do something
 		}
 	}
 
-	public function mainFunction() {
-
-		$sender = new Sender;
-		$sender->sendReply('Halo '.$this->session->logged_on_user.'!');
-	}
 }

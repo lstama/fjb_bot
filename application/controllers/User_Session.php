@@ -10,8 +10,19 @@ class User_Session extends CI_Controller {
 	public $request_token;
 	public $access_token;
 	public $status = 'trying_to_login';
-	public $logged_on_user = 'Anon';
 	public $content;
+	public $last_session;
+
+	public function setLastSession($last) {
+
+		$this->last_session = $last;
+		$data = array(
+				'last_session'   => $this->last_session
+				);
+
+		$this->load->model('session_model');
+		$this->session_model->update_session($this->session['username'], $data);
+	}
 
 	public function __construct($content) {
 
@@ -38,7 +49,7 @@ class User_Session extends CI_Controller {
     		return;
     	}
 
-    	#TODO : HOW TO CHECK ACCESS TOKEN VALID OR NOT
+    	#HOW TO CHECK ACCESS TOKEN VALID OR NOT
     	try {
 
 			
@@ -55,10 +66,10 @@ class User_Session extends CI_Controller {
     		$response =  $exception->getMessage();
 		}
 
+		#Logged on
 		if ( (gettype($response) != 'string') and (isset($temp)) ) {
 
 			$this->status = 'logged_on';
-			$this->logged_on_user = $this->session['user'];
 			return;
 		}
 
@@ -142,8 +153,8 @@ class User_Session extends CI_Controller {
 			if ($this->session['username'] != $this->access_token['username']) {
 
 
-				$status = 'trying_to_login';
-				$last_session = $this->session['last_session'];
+				$this->status = 'trying_to_login';
+				$this->last_session = 'trying_to_login';
 				$this->content['user']->username = $this->session['username'];
 				$this->content['user']->JID = $this->session['JID'];
 
@@ -155,25 +166,24 @@ class User_Session extends CI_Controller {
 				return;
 			}
 
-			$status = 'logged_on';
-			$last_session = $this->session['last_session'];
-
-			if ($last_session == 'trying_to_login') {
-
-				$last_session = 'logged_on';
-			}
+			$this->status = 'logged_on';
+			$this->last_session = 'logged_on';
 
 			$data = array(
 				'token'          => $this->access_token['oauth_token'],
 				'token_secret'   => $this->access_token['oauth_token_secret'],
-				'last_session'   => $last_session,
+				'last_session'   => $this->last_session,
 				'userid' 		 => $this->access_token['userid'],
 				'user' 		 	 => $this->access_token['username']
 				);
 
-			// $this->session_model->update_session($this->access_token['username'], $data);
-			$this->session_model->update_session($this->session['username'], $data);
 
+			$this->session_model->update_session($this->session['username'], $data);
+			$this->content['message'] = '/menu';
+			$this->content['user']->username = $this->session['username'];
+			$this->content['user']->JID = $this->session['JID'];
+
+			$this->menuUtama();
 			echo "Authorisasi berhasil. Silakan kembali ke apps untuk mulai melanjutkan.";
 			return;
 
@@ -181,8 +191,8 @@ class User_Session extends CI_Controller {
 
 		if ($this->access_token['access'] === 'DENIED') {
 
-			$status = 'trying_to_login';
-			$last_session = $this->session['last_session'];
+			$this->status = 'trying_to_login';
+			$this->last_session = 'trying_to_login';
 			
 			$this->content['user']->username = $this->session['username'];
 			$this->content['user']->JID = $this->session['JID'];
@@ -193,6 +203,18 @@ class User_Session extends CI_Controller {
 			echo "Authorisasi gagal. Silakan kembali ke apps untuk mendapatkan link authorisasi yang baru.";
 			return;
 		}
-		#send menu utama 
+	}
+
+	public function menuUtama(){
+
+		$this->setLastSession('menu');
+
+		$sender = new Sender();
+		$b = array($sender->button('/daftar_alamat', 'Daftar Alamat'));
+		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
+		
+		$sender->sendMessage($this->content['bot_account'], $this->content['user'], $i);
+		return;
+
 	}
 }
