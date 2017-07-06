@@ -29,6 +29,7 @@ class Main_Handler {
 
 			#call the bot
 			$bot = new FJB_Bot($this->session);
+			$bot->main();
 
 		} else {
 

@@ -70,6 +70,7 @@ class User_Session extends CI_Controller {
 		if ( (gettype($response) != 'string') and (isset($temp)) ) {
 
 			$this->status = 'logged_on';
+			$this->last_session = $this->session['last_session'];
 			return;
 		}
 
