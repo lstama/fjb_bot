@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 
-class Sender extends CI_Controller {
+class Sender {
 
 	public function sendToChatApi($auth, $content_type, $body) {
 
@@ -18,7 +18,7 @@ class Sender extends CI_Controller {
 		return $result;	
 	}
 
-	public function requestPost($url, $headers, $body = null) {
+	public function requestPost($url, $headers = null, $body = null) {
 
     	$client = new Client(['http_errors' => false]);
 
@@ -28,7 +28,7 @@ class Sender extends CI_Controller {
 		
 	}      
 
-	public function requestGet($url, $headers, $query = null) {
+	public function requestGet($url, $headers =  null, $query = null) {
 
 		$client = new Client(['http_errors' => false]);
 

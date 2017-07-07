@@ -18,7 +18,7 @@ class Bot_Account {
 		$this->hookSecret= getenv('BOT_HOOK_SECRET');
 		$this->consumer_key = getenv('BOT_CONSUMER_KEY');
 		$this->consumer_secret = getenv('BOT_CONSUMER_SECRET'); 
-		$this->bot_callback_url = 'https://676d5046.ngrok.io/fjb_bot/main_hook';#getenv('BOT_CALLBACK_URL');
+		$this->bot_callback_url = 'https://f714b88e.ngrok.io/fjb_bot/main_hook';#getenv('BOT_CALLBACK_URL');
 
 	}
 }

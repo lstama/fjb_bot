@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 include_once 'Sender.php';
+include_once 'Create_Alamat.php';
 
 class Alamat extends CI_Controller {
 
@@ -25,7 +26,11 @@ class Alamat extends CI_Controller {
 		        $this->lihatAlamat($command[1]);
 		        break;
 		    case 'create':
-		        $this->startCreate();
+		    	$create = new Create_Alamat($this->session);
+		        $create->startCreate();
+		        break;
+		    case 'hapus':
+		    	$this->sendDeleteConfirmation($command[1]);
 		        break;
 
 		    default:
@@ -39,119 +44,16 @@ class Alamat extends CI_Controller {
 		$last_session = explode('_', $last_session, 2);
 		switch ($last_session[0]) {
 		    case 'create':
-		        $this->createCreateSession($last_session[1]);
+		        $create = new Create_Alamat($this->session);
+		        $create->createCreateSession($last_session[1]);
 		        break;
 
+		    case 'delete':
+		        $this->deleteAlamat($last_session[1]);
+		        break;
 		    default:
 		        $this->unrecognizedCommand();
 		}
-	}
-
-	public function createCreateSession($last_session) {
-
-		$last_session = explode('_', $last_session, 2);
-		switch ($last_session[0]) {
-		    case 'label':
-		        $this->createLabel();
-		        break;
-
-		    case 'nama':
-		        $this->createNama();
-		        break;
-
-		    case 'telp':
-		        $this->createTelp();
-		        break;
-
-		    default:
-		        $this->unrecognizedCommand();
-		}
-	}
-
-	public function startCreate() {
-
-		$this->load->model('create_alamat_model');
-		$create = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
-		
-		if (empty($create)) {
-
-    		$this->create_alamat_model->create_create_alamat(['user' => $this->session->content['user']->username]);
-    	}
-
-    	$response = $this->get('v1/fjb/location/addresses');
-		if (! $response['success']) return;
-		$response = $response['result'];
-
-		$sender = new Sender();
-		if (count($response['data']) >= 10) {
-
-
-			$this->session->setLastSession('menu');
-			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
-			$i['interactive'] = $sender->interactive(null, "Jumlah Alamat Sudah Maksimum", null, $b, null);
-		
-			$sender->sendReply($i);
-			return;
-		}
-
-    	$this->session->setLastSession('alamat_create_label');
-		
-		$sender->sendReply('Silakan masukkan label alamat.');
-	}
-
-	public function createLabel() {
-
-		$label = $this->session->content['message'];
-		$data = ['label' => $label];
-		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
-		
-		#ke nama
-		$this->session->setLastSession('alamat_create_nama');
-		$sender = new Sender();
-		$sender->sendReply('Silakan masukkan nama tujuan pengiriman.');
-	}
-
-	public function createNama() {
-
-		$nama = $this->session->content['message'];
-		$data = ['nama' => $nama];
-		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
-		
-		#ke telp
-		$this->session->setLastSession('alamat_create_telp');
-		$sender = new Sender();
-		$sender->sendReply('Silakan masukkan nomor handphone tujuan pengiriman.');
-	}
-
-	public function createTelp() {
-
-		$telp = $this->session->content['message'];
-		$sender = new Sender();
-
-		if ((! is_numeric($telp)) or (count($telp) > 13)) {
-
-			#not valid
-			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
-			$i['interactive'] = $sender->interactive(null, 'Nomor Tidak Valid', "Silakan masukkan nomor yang valid atau kembali ke menu utama.", $b, null);
-		
-			$sender->sendReply($i);
-			return;
-		}
-
-		$data = ['telp' => $telp];
-		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
-		
-		#ke nama
-		$this->session->setLastSession('alamat_create_provinsi');
-		$this->sendProvinceList();
-	}
-
-	public function sendProvinceList() {
-
-		#TODO;
 	}
 
 	public function daftarAlamat() {
@@ -170,7 +72,7 @@ class Alamat extends CI_Controller {
 			$counter += 1;
 			if ($counter == 11) break;
 
-			$b = array($sender->button('/alamat_lihat_' . $a['id'], 'Detail'));
+			$b = array($sender->button('/alamat_lihat_' . $a['id'], 'Detail'), $sender->button('/alamat_hapus_' . $a['id'], 'Hapus'));
 			$temp = $sender->interactive(null, $a['name'], $a['address'], $b, null);
 
 			array_push($i['interactives'], $temp);
@@ -191,20 +93,20 @@ class Alamat extends CI_Controller {
 		#Retrieve success
 		$sender = new Sender();
 
-		$no_alamat = -1;
+		$ada = false;
 		$result = [];
 		foreach ($response['data'] as $k => $a) {
 
 			if ($a['id'] == $id) {
 
-				$no_alamat = $k;
+				$ada = true;
 				$result = $a;
 				break;
 			}
 
 		}
 
-		if ($no_alamat == -1) {
+		if (!$ada) {
 
 			$sender->sendReply('Alamat tidak ditemukan.');
 			return;
@@ -223,11 +125,85 @@ class Alamat extends CI_Controller {
 		if (! $provinsi['success']) return;
 		$provinsi = $provinsi['result'];
 
-		$i[interactive] = $sender->interactive(null, $result['name'], $result['owner_name'],null,null);
+		$i['interactive'] = $sender->interactive(null, $result['name'], $result['owner_name'],null,null);
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
 		return;
+	}
+
+	public function sendDeleteConfirmation($id) {
+
+		$response = $this->get('v1/fjb/location/addresses');
+		if (! $response['success']) return;
+		$response = $response['result'];
+
+		#Retrieve success
+		$sender = new Sender();
+
+		$ada = false;
+		$result = [];
+		foreach ($response['data'] as $k => $a) {
+
+			if ($a['id'] == $id) {
+
+				$ada = true;
+				$result = $a;
+				break;
+			}
+
+		}
+
+		if (!$ada) {
+
+			$sender->sendReply('Alamat tidak ditemukan.');
+			return;
+		}
+
+		#get kecamatan
+		$kecamatan = $this->getArea($result['area_id']);
+		if (! $kecamatan['success']) return;
+		$kecamatan = $kecamatan['result'];
+		#get kota
+		$kota = $this->getCity($result['city_id']);
+		if (! $kota['success']) return;
+		$kota = $kota['result'];
+		#get provinsi
+		$provinsi = $this->getProvince($result['province_id']);
+		if (! $provinsi['success']) return;
+		$provinsi = $provinsi['result'];
+
+		
+		$text = $result['owner_name'] . "\n" . $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+
+		$b = array($sender->button('ya', 'Ya'),$sender->button('/alamat_daftar', 'Tidak'));
+		$i['interactive'] = $sender->interactive(null, $result['name'], 'Apakah anda yakin ingin menghapus alamat ini?',$b,null);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$this->session->setLastSession('alamat_delete_' . $id);
+
+
+	}
+
+	public function deleteAlamat($id) {
+
+		$confirmation = $this->session->content['message'];
+		if ($confirmation != 'ya') {
+
+			$this->sendDeleteConfirmation();
+			return;
+		}
+
+		$result = $this->delete('v1/fjb/location/addresses/' . $id);
+		#ke telp
+		#var_dump($result);
+		#return;
+		$this->session->setLastSession('alamat_daftar');
+		$sender = new Sender();
+		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
+		$i['interactive'] = $sender->interactive(null, "Alamat Berhasil Dihapus", null, $b, null);
+		
+		$sender->sendReply($i);
 	}
 
 	public function get($parameter) {
@@ -235,6 +211,60 @@ class Alamat extends CI_Controller {
 		try {
 
     		$response = $this->session->oauth_client->get($parameter);
+			$temp = $response->json();
+    	}
+    	catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+ 	  		// Kaskus Api returned an error
+    		$response =  $exception->getMessage();
+		} 
+		catch (\Exception $exception) {
+    		// some other error occured
+    		$response =  $exception->getMessage();
+		}
+
+		#error occured
+		if ( (gettype($response) == 'string') or (isset($temp) == FALSE) ) {
+
+			$this->errorOccured();
+			echo $response;
+			return ['success' => false, 'result' => ''];
+		}
+
+		return ['success' => true, 'result' => $temp];
+	}
+
+	public function post($url, $parameter) {
+
+		try {
+
+    		$response = $this->session->oauth_client->post($url,['body' => $parameter]);
+			$temp = $response->json();
+    	}
+    	catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+ 	  		// Kaskus Api returned an error
+    		$response =  $exception->getMessage();
+		} 
+		catch (\Exception $exception) {
+    		// some other error occured
+    		$response =  $exception->getMessage();
+		}
+
+		#error occured
+		if ( (gettype($response) == 'string') or (isset($temp) == FALSE) ) {
+
+			$this->errorOccured();
+			echo $response;
+			return ['success' => false, 'result' => ''];
+		}
+
+		return ['success' => true, 'result' => $temp];
+	}
+
+	public function delete($url, $parameter = null) {
+
+		try {
+
+    		$response = $this->session->oauth_client->delete($url,['body' => $parameter]);
 			$temp = $response->json();
     	}
     	catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
