@@ -32,6 +32,9 @@ class Alamat extends CI_Controller {
 		    case 'hapus':
 		    	$this->sendDeleteConfirmation($command[1]);
 		        break;
+		    case 'default':
+		    	$this->setToDefault($command[1]);
+		        break;
 
 		    default:
 		        $this->unrecognizedCommand();
@@ -72,8 +75,15 @@ class Alamat extends CI_Controller {
 			$counter += 1;
 			if ($counter == 11) break;
 
-			$b = array($sender->button('/alamat_lihat_' . $a['id'], 'Detail'), $sender->button('/alamat_hapus_' . $a['id'], 'Hapus'));
-			$temp = $sender->interactive(null, $a['name'], $a['address'], $b, null);
+			$n = $a['name'];
+			$b = array($sender->button('/alamat_lihat_' . $a['id'], 'Detail'), $sender->button('/alamat_default_' . $a['id'], 'Jadikan Alamat Utama'), $sender->button('/alamat_hapus_' . $a['id'], 'Hapus'));
+
+			if ($a['default']) {
+
+				$b = array($sender->button('/alamat_lihat_' . $a['id'], 'Detail'));
+				$n .= '(Alamat Utama)';
+			}
+			$temp = $sender->interactive(null, $n, $a['address'], $b, null);
 
 			array_push($i['interactives'], $temp);
 
@@ -151,7 +161,6 @@ class Alamat extends CI_Controller {
 				$result = $a;
 				break;
 			}
-
 		}
 
 		if (!$ada) {
@@ -204,6 +213,24 @@ class Alamat extends CI_Controller {
 		$i['interactive'] = $sender->interactive(null, "Alamat Berhasil Dihapus", null, $b, null);
 		
 		$sender->sendReply($i);
+	}
+
+	public function setToDefault($id) {
+
+		$parameter = [
+						'default' => true
+					];
+
+		$result = $this->post('v1/fjb/location/addresses/' . $id, $parameter);
+		#ke telp
+		#var_dump($result);
+		#return;
+		$this->session->setLastSession('alamat_default');
+		$sender = new Sender();
+		$b = array($sender->button('/alamat_daftar', 'Kembali ke Daftar Alamat'),$sender->button('/menu', 'Kembali ke Menu Utama'));
+		$i['interactive'] = $sender->interactive(null, "Alamat Utama Berhasil Diubah", null, $b, null);
+		
+		$sender->sendReply('$i');
 	}
 
 	public function get($parameter) {

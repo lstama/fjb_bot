@@ -54,7 +54,7 @@ class Create_Alamat extends CI_Controller {
 		}
 	}
 
-	public function startCreate() {
+	public function startEdit($id) {
 
 		$this->load->model('create_alamat_model');
 		$create = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
@@ -80,7 +80,8 @@ class Create_Alamat extends CI_Controller {
 			return;
 		}
 
-    	$this->session->setLastSession('alamat_create_label');
+		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, ['id' => $id]);
+    	$this->session->setLastSession('alamat_edit_label');
 		
 		$sender->sendReply('Silakan masukkan label alamat.');
 	}
@@ -93,7 +94,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke nama
-		$this->session->setLastSession('alamat_create_nama');
+		$this->session->setLastSession('alamat_edit_nama');
 		$sender = new Sender();
 		$sender->sendReply('Silakan masukkan nama tujuan pengiriman.');
 	}
@@ -106,7 +107,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke telp
-		$this->session->setLastSession('alamat_create_telp');
+		$this->session->setLastSession('alamat_edit_telp');
 		$sender = new Sender();
 		$sender->sendReply('Silakan masukkan nomor handphone tujuan pengiriman.');
 	}
@@ -119,7 +120,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke telp
-		$this->session->setLastSession('alamat_create_confirmation');
+		$this->session->setLastSession('alamat_edit_confirmation');
 		$sender = new Sender();
 		$this->sendCreateConfirmation();
 	}
@@ -208,7 +209,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke provinsi
-		$this->session->setLastSession('alamat_create_provinsi');
+		$this->session->setLastSession('alamat_edit_provinsi');
 		$this->sendProvinceList();
 	}
 
@@ -268,7 +269,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke provinsi
-		$this->session->setLastSession('alamat_create_kota');
+		$this->session->setLastSession('alamat_edit_kota');
 		$this->sendCityList($provinsi);
 	}
 
@@ -345,7 +346,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke provinsi
-		$this->session->setLastSession('alamat_create_kecamatan');
+		$this->session->setLastSession('alamat_edit_kecamatan');
 		$this->sendAreaList($kota);
 	}
 
@@ -422,7 +423,7 @@ class Create_Alamat extends CI_Controller {
 		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
 		
 		#ke alamat
-		$this->session->setLastSession('alamat_create_alamat');
+		$this->session->setLastSession('alamat_edit_alamat');
 		$sender->sendReply('Silakan masukkan alamat tujuan (jalan, desa, kelurahan, dsb).');
 	}
 

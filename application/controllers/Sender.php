@@ -37,11 +37,11 @@ class Sender {
 		return $result;
 	} 
 
-	public function sendReply($message) {
+	public function sendReply($message, $placeholder = null) {
 
 		http_response_code(200);
 		header('Content-Type: application/json');
-		$data = ["body" => $message];
+		$data = ["body" => $message, 'placeholder' => '$placeholder'];
 		
 		echo json_encode($data);
 
