@@ -211,8 +211,8 @@ class User_Session extends CI_Controller {
 		$this->setLastSession('menu');
 
 		$sender = new Sender();
-		$b = array($sender->button('/daftar_alamat', 'Daftar Alamat'));
-		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
+		$b = array($sender->button('/menu', 'Menu Utama'));
+		$i['interactive'] = $sender->interactive(null, "Login Berhasil", "Silakan klik tombol di bawah ini untuk melanjutkan.", $b, null);
 		
 		$sender->sendMessage($this->content['bot_account'], $this->content['user'], $i);
 		return;

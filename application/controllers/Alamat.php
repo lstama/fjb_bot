@@ -61,6 +61,7 @@ class Alamat extends CI_Controller {
 
 	public function daftarAlamat() {
 
+		$this->session->setLastSession('alamat_daftar');
 		$response = $this->get('v1/fjb/location/addresses');
 		if (! $response['success']) return;
 		$response = $response['result'];
@@ -89,13 +90,18 @@ class Alamat extends CI_Controller {
 
 		}
 
-		if ($counter == 0) $i = "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.";
+		if ($counter == 0) {
+
+			$b = array($sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/menu', 'Kembali ke Menu Utama.'));
+			$i['interactive'] = $sender->interactive(null, null, "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.", $b, null);
+		}
 		$sender->sendReply($i);
 		return;
 	}
 
 	public function lihatAlamat($id) {
 
+		$this->session->setLastSession('alamat_lihat');
 		$response = $this->get('v1/fjb/location/addresses');
 		if (! $response['success']) return;
 		$response = $response['result'];
@@ -139,11 +145,15 @@ class Alamat extends CI_Controller {
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+		$b = array($sender->button('/alamat_daftar', 'Kembali ke Daftar Alamat'),$sender->button('/menu', 'Kembali ke Menu Utama'));
+		$i['interactive'] = $sender->interactive(null, null, null, $b, null);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		return;
 	}
 
 	public function sendDeleteConfirmation($id) {
 
+		$this->session->setLastSession('alamat_delete_confirmation');
 		$response = $this->get('v1/fjb/location/addresses');
 		if (! $response['success']) return;
 		$response = $response['result'];
@@ -199,7 +209,7 @@ class Alamat extends CI_Controller {
 		$confirmation = $this->session->content['message'];
 		if ($confirmation != 'ya') {
 
-			$this->sendDeleteConfirmation();
+			$this->sendDeleteConfirmation($id);
 			return;
 		}
 
@@ -209,7 +219,7 @@ class Alamat extends CI_Controller {
 		#return;
 		$this->session->setLastSession('alamat_daftar');
 		$sender = new Sender();
-		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
+		$b = array($sender->button('/alamat_daftar', 'Kembali ke Daftar Alamat'),$sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Alamat Berhasil Dihapus", null, $b, null);
 		
 		$sender->sendReply($i);
@@ -217,8 +227,9 @@ class Alamat extends CI_Controller {
 
 	public function setToDefault($id) {
 
+		$this->session->setLastSession('alamat_default');
 		$parameter = [
-						'default' => true
+						'default' => 'true'
 					];
 
 		$result = $this->post('v1/fjb/location/addresses/' . $id, $parameter);
@@ -230,7 +241,7 @@ class Alamat extends CI_Controller {
 		$b = array($sender->button('/alamat_daftar', 'Kembali ke Daftar Alamat'),$sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Alamat Utama Berhasil Diubah", null, $b, null);
 		
-		$sender->sendReply('$i');
+		$sender->sendReply($i);
 	}
 
 	public function get($parameter) {
