@@ -22,6 +22,10 @@ class Lapak extends CI_Controller {
 		        $this->showSearchInstruction();
 		        break;
 
+		    case 'details':
+		        $this->showDetails($command[1]);
+		        break;
+
 		    default:
 		        $this->unrecognizedCommand();
 		}
@@ -49,6 +53,32 @@ class Lapak extends CI_Controller {
 		$this->session->setLastSession('lapak_search_1');
 		$sender = new Sender;
 		$sender->sendReply('Silakan masukkan barang yang ingin dibeli.');
+
+	}
+
+	public function showDetails($thread_id) {
+
+		$this->session->setLastSession('lapak_details_' . $thread_id);
+
+		$response = $this->get('v1/post/' . $thread_id, []);
+		if (! $response['success']) return;
+		$response = $response['result'];
+
+		var_dump($response);
+
+		$sender = new Sender;
+		$title = $response['thread']['title'];
+		$price = "Harga : " . $this->toRupiah($response['thread']['discounted_price']);
+
+			if ($response['thread']['discount'] > 0) {
+
+				$price .= "\nHarga sebelum diskon : " . $this->toRupiah($response['thread']['item_price']);
+			}
+
+		$button = array($sender->button('/buy_' . $response['thread']['thread_id'], 'Beli'), $sender->button('/menu', 'Kembali Ke Menu Utama'));
+		$i['interactive'] = $sender->interactive(null, $title, $price, $button, null);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		return;
 
 	}
 
@@ -104,7 +134,7 @@ class Lapak extends CI_Controller {
 
 			$image = $a['resources']['thumbnail'];
 
-			$b = array($sender->button('/lapak_detail_' . $a['post_id'], 'Detail'));
+			$b = array($sender->button('/lapak_details_' . $a['post_id'], 'Detail'));
 
 			$temp = $sender->interactive($image, $t, $p, $b, null);
 
@@ -138,6 +168,8 @@ class Lapak extends CI_Controller {
 
 		return;
 	}
+
+
 
 	public function toRupiah($number) {
 
