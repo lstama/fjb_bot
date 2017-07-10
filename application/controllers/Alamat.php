@@ -93,7 +93,8 @@ class Alamat extends CI_Controller {
 		if ($counter == 0) {
 
 			$b = array($sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/menu', 'Kembali ke Menu Utama.'));
-			$i['interactive'] = $sender->interactive(null, null, "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.", $b, null);
+			$io['interactive'] = $sender->interactive(null, null, "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.", $b, null);
+			$i = $io;
 		}
 		$sender->sendReply($i);
 		return;

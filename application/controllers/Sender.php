@@ -41,7 +41,7 @@ class Sender {
 
 		http_response_code(200);
 		header('Content-Type: application/json');
-		$data = ["body" => $message, 'placeholder' => '$placeholder'];
+		$data = ["body" => $message, 'placeholder' => $placeholder];
 		
 		echo json_encode($data);
 
