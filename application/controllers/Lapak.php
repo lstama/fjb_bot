@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 include_once 'Sender.php';
+include_once 'Post_Location.php';
 
 class Lapak extends CI_Controller {
 
@@ -58,13 +59,11 @@ class Lapak extends CI_Controller {
 
 	public function showDetails($thread_id) {
 
-		$this->session->setLastSession('lapak_details_' . $thread_id);
-
 		$response = $this->get('v1/post/' . $thread_id, []);
 		if (! $response['success']) return;
 		$response = $response['result'];
 
-		var_dump($response);
+		#var_dump($response);
 
 		$sender = new Sender;
 		$title = $response['thread']['title'];
@@ -75,9 +74,46 @@ class Lapak extends CI_Controller {
 				$price .= "\nHarga sebelum diskon : " . $this->toRupiah($response['thread']['item_price']);
 			}
 
-		$button = array($sender->button('/buy_' . $response['thread']['thread_id'], 'Beli'), $sender->button('/menu', 'Kembali Ke Menu Utama'));
-		$i['interactive'] = $sender->interactive(null, $title, $price, $button, null);
+		$i['interactive'] = $sender->interactive(null, $title, $price, null, null);
+
+		#title&price
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		
+		$photos['interactives'] = [];
+		foreach ($response['thread']['resources']['images_thumbnail'] as $key => $value) {
+			
+			$full_size = $response['thread']['resources']['images'][$key];
+			$photo = $sender->interactive($value,null,null,[$sender->button($full_size, 'Lihat Ukuran Penuh')],null);
+			array_push($photos['interactives'], $photo);
+		}
+
+		#var_dump($photos);
+
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $photos);
+
+		$loc = new Post_Location();
+		#var_dump($loc);
+		$attribute = "Lokasi : " . $loc->location[$response['thread']['item_location']];
+		$attribute .= "\nKondisi : " . $loc->condition[$response['thread']['item_condition']];
+		$attribute .= "\nBerat : " . $response['thread']['shipping']['weight'] . " gram";
+
+		foreach ($response['thread']['extra_attributes'] as $a) {
+
+			$attribute .= "\n" . $a['attribute'] . " : " . $a['value'];
+		}
+
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $attribute);
+
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $response['posts'][0]['post'][0]['text']);
+
+		$button = array($sender->button('/buy_' . $response['thread']['thread_id'], 'Beli'), $sender->button('back', 'Kembali Ke Pencarian'), $sender->button('/menu', 'Kembali Ke Menu Utama'));
+
+		$i['interactive'] = $sender->interactive(null, null, null, $button, null);
+
+		#button
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+
+		#$this->session->setLastSession('lapak_details_' . $thread_id);
 		return;
 
 	}
@@ -92,6 +128,9 @@ class Lapak extends CI_Controller {
 		elseif ($this->session->content['message'] == 'next') {
 			$page += 1;
 		} 
+		elseif ($this->session->content['message'] == 'back') {
+			#do nothing;
+		}
 		else {
 			$this->unrecognizedCommand();
 		}
@@ -109,7 +148,8 @@ class Lapak extends CI_Controller {
 		if (! $response['success']) return;
 		$response = $response['result'];
 
-		#var_dump($response);
+		var_dump($response);
+		return;
 		#Retrieve success
 		$sender = new Sender();
 
@@ -142,7 +182,7 @@ class Lapak extends CI_Controller {
 
 		}
 
-		if ($counter == 0) {
+		if ($response["total_pages"] == 0) {
 
 			$b = array($sender->button('/menu', 'Kembali ke Menu Utama.'));
 			$tmp['interactive'] = $sender->interactive(null, "Barang Tidak Ditemukan", null, $b, null);
@@ -162,7 +202,8 @@ class Lapak extends CI_Controller {
 
 			array_push($b, $sender->button('next', 'Halaman Selanjutnya'));
 		}
-		
+
+		array_push($b, $sender->button('/menu', 'Kembali Ke Menu Utama'));		
 		$tp['interactive'] = $sender->interactive(null, null, null, $b, null);
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $tp);
 

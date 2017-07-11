@@ -43,7 +43,7 @@ class FJB_Bot extends CI_Controller {
 		$this->session->setLastSession('menu');
 
 		$sender = new Sender();
-		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'));
+		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/lapak_start', 'Cari Barang'));
 		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
 		
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
