@@ -148,8 +148,8 @@ class Lapak extends CI_Controller {
 		if (! $response['success']) return;
 		$response = $response['result'];
 
-		var_dump($response);
-		return;
+		#var_dump($response);
+		#return;
 		#Retrieve success
 		$sender = new Sender();
 
