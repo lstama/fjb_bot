@@ -133,6 +133,7 @@ class Lapak extends CI_Controller {
 		}
 		else {
 			$this->unrecognizedCommand();
+			return;
 		}
 		$barang = $command[1];
 		$this->session->content['message'] = $barang;

@@ -4,6 +4,7 @@ require 'vendor/autoload.php';
 include_once 'Sender.php';
 include_once 'Alamat.php';
 include_once 'Lapak.php';
+include_once 'Buy.php';
 
 class FJB_Bot extends CI_Controller {
 
@@ -31,6 +32,11 @@ class FJB_Bot extends CI_Controller {
 		    case '/lapak':
 		        $lapak = new Lapak($this->session);
 		        $lapak->main($command[1]);
+		        break;
+
+		    case '/buy':
+		        $buy = new Buy($this->session);
+		        $buy->startBuy($command[1]);
 		        break;
 
 		    default:
@@ -63,6 +69,11 @@ class FJB_Bot extends CI_Controller {
 		    case 'lapak':
 		        $lapak = new Lapak($this->session);
 		        $lapak->lastSessionSpecific($last_session[1]);
+		        break;
+
+		    case 'buy':
+		        $buy = new Buy($this->session);
+		        $buy->createBuySession($last_session[1]);
 		        break;
 
 		    default:
