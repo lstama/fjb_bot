@@ -3,6 +3,8 @@
 require 'vendor/autoload.php';
 include_once 'Sender.php';
 include_once 'Alamat.php';
+include_once 'Lapak.php';
+include_once 'Buy.php';
 
 class FJB_Bot extends CI_Controller {
 
@@ -27,6 +29,16 @@ class FJB_Bot extends CI_Controller {
 		        $alamat->main($command[1]);
 		        break;
 
+		    case '/lapak':
+		        $lapak = new Lapak($this->session);
+		        $lapak->main($command[1]);
+		        break;
+
+		    case '/buy':
+		        $buy = new Buy($this->session);
+		        $buy->startBuy($command[1]);
+		        break;
+
 		    default:
 		        $this->lastSessionSpecific();
 		}
@@ -37,7 +49,7 @@ class FJB_Bot extends CI_Controller {
 		$this->session->setLastSession('menu');
 
 		$sender = new Sender();
-		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'));
+		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/lapak_start', 'Cari Barang'));
 		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
 		
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
@@ -52,6 +64,16 @@ class FJB_Bot extends CI_Controller {
 		    case 'alamat':
 		        $alamat = new Alamat($this->session);
 		        $alamat->lastSessionSpecific($last_session[1]);
+		        break;
+
+		    case 'lapak':
+		        $lapak = new Lapak($this->session);
+		        $lapak->lastSessionSpecific($last_session[1]);
+		        break;
+
+		    case 'buy':
+		        $buy = new Buy($this->session);
+		        $buy->createBuySession($last_session[1]);
 		        break;
 
 		    default:
