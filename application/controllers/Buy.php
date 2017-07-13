@@ -38,14 +38,189 @@ class Buy extends CI_Controller {
 		}
 	}
 
+	public function selectConfirmation() {
+
+		if ($this->session->content['message'] == 'ya') {
+
+			$this->load->model('buy_model');
+			$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+
+			$parameter = array(
+					'buyer_name' => $buy['buyer_name'],
+					'buyer_phone' => $buy['buyer_phone'],
+					'quantity' => $buy['quantity'],
+					'tips' => '0',
+					'address_id' => $buy['address_id'],
+					'shipping_agent' => $buy['shipping_id'],
+					'insurance' => '0'
+				);
+
+			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/buy_now', $parameter);
+			if (! $response['success']) return;
+			$response = $response['result'];
+
+			#var_dump($response);
+			$this->session->setLastSession('buy_checkout_' . $buy['thread_id']);
+			$sender = new Sender();
+			$b = array($sender->button($response['checkout_url'], 'Lanjut ke Pembayaran'), $sender->button('/menu', 'Kembali ke Menu Utama'));
+			$i['interactive'] = $sender->interactive(null, "Pemesanan Berhasil", 'Silakan klik tombol di bawah ini untuk lanjut ke pembayaran', $b, null);
+		
+			$sender->sendReply($i);
+		}
+	}
+
+	public function selectShippingAgent() {
+
+		$choice = $this->session->content['message'];
+
+		$this->load->model('buy_model');
+		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+
+		#var_dump($buy);
+
+		$query = ['query' => ['thread_id' => $buy['thread_id'], 'dest_id' => $buy['dest_id'], 'quantity' => $buy['quantity']]];
+
+		$response = $this->get('v1/fjb/lapak/' . $buy['thread_id'] . '/shipping_costs', $query);
+		if (! $response['success']) return;
+		$response = $response['result'];
+
+		$ada = false;
+		$jasa = [];
+		foreach ($response['data'] as $a) {
+
+			if ($ada) break;
+			if ($a['type'] != 'others') {
+
+				foreach ($a['methods'] as $key => $value) {
+					
+					if ($value['id'] == $choice) {
+						$ada = true;
+						$jasa['method'] = $value;
+						$jasa['image'] = $a['image'];
+						break;
+					}
+				}
+			}
+		}
+
+		if (!$ada) {
+
+			$sender = new Sender;
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], "Metode pengiriman tidak valid.");
+			$this->sendShipping();
+			return;
+		}
+
+		$this->buy_model->update_buy($this->session->content['user']->username, ['shipping_id' => $choice]);
+		$this->session->setLastSession('buy_confirmation');
+		$this->sendConfirmation($jasa);
+	}
+
+	public function sendConfirmation($jasa) {
+
+		$this->load->model('buy_model');
+		$sender = new Sender;
+		$result = $this->buy_model->find_buy($this->session->content['user']->username);
+
+		$alamat = $this->checkAlamat($result['address_id']);
+
+		$this->displayAlamat($alamat);
+
+		$this->displayJasaPengiriman($jasa);
+
+		$price = $this->displayBarang($result['thread_id']);
+
+		$total_price = $result['quantity'] * $price;
+		$biaya = 'Total barang : ' . $result['quantity'];
+		$biaya .= "\nTotal harga barang : " . $this->toRupiah($total_price);
+		$biaya .= "\nBiaya pengiriman : " . $this->toRupiah($jasa['method']['cost']);
+		$biaya .= "\nTotal biaya : " . $this->toRupiah($jasa['method']['cost'] + $total_price);
+
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $biaya);
+
+		$b = array(
+				$sender->button('ya', 'Ya'),
+				$sender->button('/buy_' . $result['thread_id'], 'Ubah Data'),
+				$sender->button('/menu', 'Tidak')
+			);
+
+		$i['interactive'] = $sender->interactive(null, 'Apakah data di atas sudah benar?', "Kaskus tidak bertanggung jawab atas data yang salah.", $b, null);
+		
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+
+		return;
+	}
+
+	public function displayJasaPengiriman($jasa) {
+
+		$sender = new Sender;
+		$text = $this->toRupiah($jasa['method']['cost']);
+		// var_dump($value);
+		if ($jasa['method']['estimation_time'] != "") {
+
+			$text .= "\n" . $jasa['method']['estimation_time'] . " hari";
+		}
+
+		$i['interactive'] = $sender->interactive($jasa['image'], $jasa['method']['name'], $text, null, null);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+	}
+
+	public function displayBarang($thread_id) {
+
+		$response = $this->get('v1/lapak/' . $thread_id, []);
+		if (! $response['success']) return;
+		$response = $response['result'];
+
+		#var_dump($response);
+
+		$sender = new Sender;
+		$title = $response['thread']['title'];
+		$price = "Harga : " . $this->toRupiah($response['thread']['discounted_price']);
+
+			if ($response['thread']['discount'] > 0) {
+
+				$price .= "\nHarga sebelum diskon : " . $this->toRupiah($response['thread']['item_price']);
+			}
+
+		$i['interactive'] = $sender->interactive($response['thread']['resources']['thumbnail'], $title, $price, null, null);
+
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+	
+		return $response['thread']['discounted_price'];
+	}
+
+	public function displayAlamat($result) {
+
+		$sender = new Sender;
+		#get kecamatan
+		$kecamatan = $this->getArea($result['area_id']);
+		if (! $kecamatan['success']) return;
+		$kecamatan = $kecamatan['result'];
+		#get kota
+		$kota = $this->getCity($result['city_id']);
+		if (! $kota['success']) return;
+		$kota = $kota['result'];
+		#get provinsi
+		$provinsi = $this->getProvince($result['province_id']);
+		if (! $provinsi['success']) return;
+		$provinsi = $provinsi['result'];
+
+		$i['interactive'] = $sender->interactive(null, $result['name'], $result['owner_name'],null,null);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+	}
+
 	public function sendShipping() {
 
 		$this->load->model('buy_model');
 		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
 
+		#var_dump($buy);
+
 		$query = ['query' => ['thread_id' => $buy['thread_id'], 'dest_id' => $buy['dest_id'], 'quantity' => $buy['quantity']]];
 
-		$response = $this->get('v1/fjb/lapak/{thread_id}/shipping_costs', $query);
+		$response = $this->get('v1/fjb/lapak/' . $buy['thread_id'] . '/shipping_costs', $query);
 		if (! $response['success']) return;
 		$response = $response['result'];
 
@@ -64,7 +239,11 @@ class Buy extends CI_Controller {
 					$counter += 1;
 					$b = [$sender->button($value['id'], 'Pilih Jasa Pengiriman')];
 					$text = $this->toRupiah($value['cost']);
-					$text .= "\n" . $value['estimation_time'] . " hari";
+					// var_dump($value);
+					if ($value['estimation_time'] != "") {
+
+						$text .= "\n" . $value['estimation_time'] . " hari";
+					}
 					$tmp = $sender->interactive($a['image'], $value['name'], $text, $b, null);
 					array_push($i['interactives'], $tmp);
 				}
