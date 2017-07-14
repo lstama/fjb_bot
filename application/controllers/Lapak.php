@@ -95,8 +95,12 @@ class Lapak extends CI_Controller {
 		#var_dump($loc);
 		$attribute = "Lokasi : " . $loc->location[$response['thread']['item_location']];
 		$attribute .= "\nKondisi : " . $loc->condition[$response['thread']['item_condition']];
-		$attribute .= "\nBerat : " . $response['thread']['shipping']['weight'] . " gram";
 
+		if (isset($response['thread']['shipping']['weight'])) {
+
+			$attribute .= "\nBerat : " . $response['thread']['shipping']['weight'] . " gram";	
+		}
+		
 		foreach ($response['thread']['extra_attributes'] as $a) {
 
 			$attribute .= "\n" . $a['attribute'] . " : " . $a['value'];

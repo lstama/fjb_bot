@@ -3,7 +3,7 @@
 require 'vendor/autoload.php';
 include_once 'Sender.php';
 
-class Buy extends CI_Controller {
+class Instant_Buy extends CI_Controller {
 
 	public $session;
 
@@ -22,7 +22,7 @@ class Buy extends CI_Controller {
 		        break;
 
 		    case 'quantity':
-		        $this->selectQuantity($last_session[1]);
+		        $this->selectQuantity();
 		        break;
 
 		    case 'shipping':
@@ -30,7 +30,7 @@ class Buy extends CI_Controller {
 		        break;
 
 			case 'confirmation':
-				$this->selectConfirmation($last_session[1]);
+				$this->selectConfirmation();
 				break;
 
 		    default:
@@ -38,24 +38,14 @@ class Buy extends CI_Controller {
 		}
 	}
 
-	public function selectConfirmation($type = null) {
+	public function selectConfirmation() {
 
 		if ($this->session->content['message'] == 'ya') {
 
 			$this->load->model('buy_model');
 			$buy = $this->buy_model->find_buy($this->session->content['user']->username);
 
-
-			if ($type == 'instant') {
-
-				$parameter = array(
-					'quantity' => $buy['quantity'],
-					'tips' => '0'
-				);	
-			}
-			else {
-
-				$parameter = array(
+			$parameter = array(
 					'buyer_name' => $buy['buyer_name'],
 					'buyer_phone' => $buy['buyer_phone'],
 					'quantity' => $buy['quantity'],
@@ -64,8 +54,6 @@ class Buy extends CI_Controller {
 					'shipping_agent' => $buy['shipping_id'],
 					'insurance' => '0'
 				);
-			}
-			
 
 			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/buy_now', $parameter);
 			if (! $response['success']) return;
@@ -125,10 +113,10 @@ class Buy extends CI_Controller {
 
 		$this->buy_model->update_buy($this->session->content['user']->username, ['shipping_id' => $choice]);
 		$this->session->setLastSession('buy_confirmation');
-		$this->sendNormalConfirmation($jasa);
+		$this->sendConfirmation($jasa);
 	}
 
-	public function sendNormalConfirmation($jasa) {
+	public function sendConfirmation($jasa) {
 
 		$this->load->model('buy_model');
 		$sender = new Sender;
@@ -147,33 +135,6 @@ class Buy extends CI_Controller {
 		$biaya .= "\nTotal harga barang : " . $this->toRupiah($total_price);
 		$biaya .= "\nBiaya pengiriman : " . $this->toRupiah($jasa['method']['cost']);
 		$biaya .= "\nTotal biaya : " . $this->toRupiah($jasa['method']['cost'] + $total_price);
-
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $biaya);
-
-		$b = array(
-				$sender->button('ya', 'Ya'),
-				$sender->button('/buy_' . $result['thread_id'], 'Ubah Data'),
-				$sender->button('/menu', 'Tidak')
-			);
-
-		$i['interactive'] = $sender->interactive(null, 'Apakah data di atas sudah benar?', "Kaskus tidak bertanggung jawab atas data yang salah.", $b, null);
-		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
-
-		return;
-	}
-
-	public function sendInstantConfirmation() {
-
-		$this->load->model('buy_model');
-		$sender = new Sender;
-		$result = $this->buy_model->find_buy($this->session->content['user']->username);
-		
-		$price = $this->displayBarang($result['thread_id']);
-
-		$total_price = $result['quantity'] * $price;
-		$biaya = 'Total barang : ' . $result['quantity'];
-		$biaya .= "\nTotal harga barang : " . $this->toRupiah($total_price);
 
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $biaya);
 
@@ -357,7 +318,7 @@ class Buy extends CI_Controller {
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Silakan masukkan jumlah barang yang akan dibeli. (1 - 99)');
 	}
 
-	public function selectQuantity($type) {
+	public function selectQuantity() {
 
 		$jumlah = $this->session->content['message'];
 		$sender = new Sender;
@@ -375,24 +336,24 @@ class Buy extends CI_Controller {
 			);
 		$this->buy_model->update_buy($this->session->content['user']->username, $j);
 
-		if ($type == 'instant') {
-
-			
-			$this->session->setLastSession('buy_confirmation_instant');
-			$this->sendInstantConfirmation();
-			return;			
-		} 
-		else {
-
-			$this->session->setLastSession('buy_shipping');
-			$this->sendShipping();
-			return;
-		}
+		$this->session->setLastSession('buy_shipping');
+		$this->sendShipping();
+		return;
 	}
 
-	public function normalBuy() {
+	public function startBuy($thread_id) {
 
-		$response = $this->get('v1/fjb/location/addresses');
+		$this->load->model('buy_model');
+		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+		
+		if (empty($buy)) {
+
+    		$this->buy_model->create_buy(['user' => $this->session->content['user']->username]);
+    	}
+
+    	$this->buy_model->update_buy($this->session->content['user']->username, ['thread_id' => $thread_id]);
+
+    	$response = $this->get('v1/fjb/location/addresses');
 		if (! $response['success']) return;
 		$response = $response['result'];
 
@@ -434,61 +395,6 @@ class Buy extends CI_Controller {
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 
     	$this->session->setLastSession('buy_alamat');
-    	return;
-	}
-
-	public function instantBuy() {
-
-		$this->session->setLastSession('buy_quantity_instant');
-		$this->sendQuantity();
-		return;
-
-	}
-
-	public function startBuy($thread_id) {
-
-		$this->load->model('buy_model');
-		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
-		
-		if (empty($buy)) {
-
-    		$this->buy_model->create_buy(['user' => $this->session->content['user']->username]);
-    	}
-
-    	$this->buy_model->update_buy($this->session->content['user']->username, ['thread_id' => $thread_id]);
-
-		$thread_type = $this->checkThreadType($thread_id);
-
-		if ($thread_type == 'instant') {
-
-			$this->instantBuy();
-			return;
-		}
-
-		if ($thread_type == 'normal') {
-
-			$this->normalBuy();
-			return;
-		}
-
-		return;
-	}
-
-	public function checkThreadType($thread_id) {
-
-		$response = $this->get('v1/lapak/' . $thread_id, []);
-		if (! $response['success']) return 'forbidden';
-		$response = $response['result'];
-
-		if (isset($response['thread']['is_instant_purchase'])) {
-
-			if ($response['thread']['is_instant_purchase']) {
-
-				return 'instant';
-			}
-		}
-
-		return 'normal';
 	}
 
 	public function get($url, $query = null) {
@@ -514,9 +420,9 @@ class Buy extends CI_Controller {
 		#error occured
 		if ( (gettype($response) == 'string') or (isset($temp) == FALSE) ) {
 
-			$this->errorOccured($response);
+			$this->errorOccured();
 			echo $response;
-			return ['success' => false, 'result' => $response];
+			return ['success' => false, 'result' => ''];
 		}
 
 		return ['success' => true, 'result' => $temp];
@@ -541,9 +447,9 @@ class Buy extends CI_Controller {
 		#error occured
 		if ( (gettype($response) == 'string') or (isset($temp) == FALSE) ) {
 
-			$this->errorOccured($response);
+			$this->errorOccured();
 			echo $response;
-			return ['success' => false, 'result' => $response];
+			return ['success' => false, 'result' => ''];
 		}
 
 		return ['success' => true, 'result' => $temp];
@@ -588,20 +494,13 @@ class Buy extends CI_Controller {
 		return;		
 	}
 
-	public function errorOccured($response = null) {
+	public function errorOccured() {
 
 		$this->session->setLastSession('errorOccured');
 
 		$sender = new Sender();
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
-		$text = "Terjadi Kesalahan pada Server.\nSilakan kembali ke menu utama.";
-
-		if ( (gettype($response) == 'string') and (isset($response))) {
-
-			$text = $response;
-		}
-
-		$i['interactive'] = $sender->interactive(null, null, $text, $b, null);
+		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
 		
 		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		return;
