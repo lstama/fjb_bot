@@ -89,26 +89,26 @@ class HistoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($h));
 
         $result = implode("\n", array_map(function ($line) {
-            return strpos($line, 'User-Agent') === 0
-                ? 'User-Agent:'
+            return strpos($line, 'UserAccount-Agent') === 0
+                ? 'UserAccount-Agent:'
                 : trim($line);
         }, explode("\n", $h)));
 
         $this->assertEquals("> GET / HTTP/1.1
 Host: localhost
-User-Agent:
+UserAccount-Agent:
 
 < HTTP/1.1 200 OK
 
 > PUT / HTTP/1.1
 Host: localhost
-User-Agent:
+UserAccount-Agent:
 
 < HTTP/1.1 201 Created
 
 > POST / HTTP/1.1
 Host: localhost
-User-Agent:
+UserAccount-Agent:
 
 < HTTP/1.1 202 Accepted
 ", $result);
@@ -132,7 +132,7 @@ User-Agent:
         $this->assertEquals(3, count($h));
 
         $h = str_replace("\r", '', $h);
-        $this->assertContains("> GET / HTTP/1.1\nHost: localhost\nUser-Agent:", $h);
+        $this->assertContains("> GET / HTTP/1.1\nHost: localhost\nUserAccount-Agent:", $h);
         $this->assertContains("< HTTP/1.1 301 Moved Permanently\nLocation: /redirect1", $h);
         $this->assertContains("< HTTP/1.1 307 Temporary Redirect\nLocation: /redirect2", $h);
         $this->assertContains("< HTTP/1.1 200 OK\nContent-Length: 2\n\nHI", $h);

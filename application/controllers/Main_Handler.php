@@ -19,7 +19,7 @@ class Main_Handler {
 		if ($this->content['message'] == 'halo') {
 
 			$sender = new Sender;
-			$sender->sendReply('Hai '.$this->content['user']->username.'!');
+			$sender->sendReply('Hai '.$this->content['User_Account']->username.'!');
 			return;
 		}
 

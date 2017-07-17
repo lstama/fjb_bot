@@ -57,11 +57,11 @@ class Create_Alamat extends CI_Controller {
 	public function startCreate() {
 
 		$this->load->model('create_alamat_model');
-		$create = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
+		$create = $this->create_alamat_model->find_create_alamat($this->session->content['User_Account']->username);
 		
 		if (empty($create)) {
 
-    		$this->create_alamat_model->create_create_alamat(['user' => $this->session->content['user']->username]);
+    		$this->create_alamat_model->create_create_alamat(['User_Account' => $this->session->content['User_Account']->username]);
     	}
 
     	$response = $this->get('v1/fjb/location/addresses');
@@ -90,7 +90,7 @@ class Create_Alamat extends CI_Controller {
 		$label = $this->session->content['message'];
 		$data = ['label' => $label];
 		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke nama
 		$this->session->setLastSession('alamat_create_nama');
@@ -103,7 +103,7 @@ class Create_Alamat extends CI_Controller {
 		$nama = $this->session->content['message'];
 		$data = ['nama' => $nama];
 		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke telp
 		$this->session->setLastSession('alamat_create_telp');
@@ -116,7 +116,7 @@ class Create_Alamat extends CI_Controller {
 		$alamat = $this->session->content['message'];
 		$data = ['alamat' => $alamat];
 		$this->load->model('create_alamat_model');
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke telp
 		$this->session->setLastSession('alamat_create_confirmation');
@@ -135,7 +135,7 @@ class Create_Alamat extends CI_Controller {
 
 
 		$this->load->model('create_alamat_model');
-		$temp = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
+		$temp = $this->create_alamat_model->find_create_alamat($this->session->content['User_Account']->username);
 		$parameter = [
 						'title' => $temp['label'],
 						'owner_name' => $temp['nama'],
@@ -162,7 +162,7 @@ class Create_Alamat extends CI_Controller {
 	public function sendCreateConfirmation() {
 
 		$this->load->model('create_alamat_model');
-		$temp = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
+		$temp = $this->create_alamat_model->find_create_alamat($this->session->content['User_Account']->username);
 		$sender = new Sender;
 
 		$kecamatan = $this->getArea($temp['kecamatan']);
@@ -179,12 +179,12 @@ class Create_Alamat extends CI_Controller {
 
 		$k = "Konfirmasi\nLabel Alamat : " . $temp['label'] . "\nNama : " . $temp['nama'] . "\nNomor Handphone : " . $temp['telp'] . "\nProvinsi : " . $provinsi . "\nKota/Kabupaten : " . $kota . "\nKecamatan : " . $kecamatan . "\nAlamat : " . $temp['alamat'];
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $k);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $k);
 		
 		$b = array($sender->button('ya', 'Ya'),$sender->button('/alamat_daftar', 'Tidak'));
 		$i['interactive'] = $sender->interactive(null, 'Apakah data di atas sudah benar?', "Kaskus tidak bertanggung jawab atas penyimpanan alamat yang salah.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function createTelp() {
@@ -205,7 +205,7 @@ class Create_Alamat extends CI_Controller {
 		}
 
 		$data = ['telp' => $telp];
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke provinsi
 		$this->session->setLastSession('alamat_create_provinsi');
@@ -221,7 +221,7 @@ class Create_Alamat extends CI_Controller {
 
 		#Retrieve success
 		$sender = new Sender();
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Silakan pilih provinsi lokasi tujuan.');
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], 'Silakan pilih provinsi lokasi tujuan.');
 		
 		$counter = 0; #maximum counter = 10
 		$button_counter = 0;
@@ -243,7 +243,7 @@ class Create_Alamat extends CI_Controller {
 			}
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function createProvinsi() {
@@ -259,13 +259,13 @@ class Create_Alamat extends CI_Controller {
 			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 			$i['interactive'] = $sender->interactive(null, 'Provinsi Tidak Valid', "Silakan pilih provinsi yang valid atau kembali ke menu utama.", $b, null);
 		
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 			$this->sendProvinceList();
 			return;
 		}
 
 		$data = ['provinsi' => $provinsi];
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke provinsi
 		$this->session->setLastSession('alamat_create_kota');
@@ -281,7 +281,7 @@ class Create_Alamat extends CI_Controller {
 
 		#Retrieve success
 		$sender = new Sender();
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Silakan pilih kabupaten/kota lokasi tujuan.');
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], 'Silakan pilih kabupaten/kota lokasi tujuan.');
 		
 		$counter = 0; #maximum counter = 10
 		$button_counter = 0;
@@ -303,7 +303,7 @@ class Create_Alamat extends CI_Controller {
 			}
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function checkCity($province, $city) {
@@ -326,7 +326,7 @@ class Create_Alamat extends CI_Controller {
 		$kota = $this->session->content['message'];
 
 		$this->load->model('create_alamat_model');
-		$provinsi = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
+		$provinsi = $this->create_alamat_model->find_create_alamat($this->session->content['User_Account']->username);
 		$provinsi = $provinsi['provinsi'];
 		$sender = new Sender();
 
@@ -336,13 +336,13 @@ class Create_Alamat extends CI_Controller {
 			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 			$i['interactive'] = $sender->interactive(null, 'Kota Tidak Valid', "Silakan pilih kota yang valid atau kembali ke menu utama.", $b, null);
 		
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 			$this->sendCityList($provinsi);
 			return;
 		}
 
 		$data = ['kota' => $kota];
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke provinsi
 		$this->session->setLastSession('alamat_create_kecamatan');
@@ -358,7 +358,7 @@ class Create_Alamat extends CI_Controller {
 
 		#Retrieve success
 		$sender = new Sender();
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Silakan pilih kecamatan lokasi tujuan.');
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], 'Silakan pilih kecamatan lokasi tujuan.');
 		
 		$counter = 0; #maximum counter = 10
 		$button_counter = 0;
@@ -380,7 +380,7 @@ class Create_Alamat extends CI_Controller {
 			}
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function checkArea($city, $area) {
@@ -403,7 +403,7 @@ class Create_Alamat extends CI_Controller {
 		$kecamatan = $this->session->content['message'];
 
 		$this->load->model('create_alamat_model');
-		$kota = $this->create_alamat_model->find_create_alamat($this->session->content['user']->username);
+		$kota = $this->create_alamat_model->find_create_alamat($this->session->content['User_Account']->username);
 		$kota = $kota['kota'];
 		$sender = new Sender();
 
@@ -413,13 +413,13 @@ class Create_Alamat extends CI_Controller {
 			$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 			$i['interactive'] = $sender->interactive(null, 'Kecamatan Tidak Valid', "Silakan pilih kecamatan yang valid atau kembali ke menu utama.", $b, null);
 		
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 			$this->sendAreaList($kota);
 			return;
 		}
 
 		$data = ['kecamatan' => $kecamatan];
-		$this->create_alamat_model->update_create_alamat($this->session->content['user']->username, $data);
+		$this->create_alamat_model->update_create_alamat($this->session->content['User_Account']->username, $data);
 		
 		#ke alamat
 		$this->session->setLastSession('alamat_create_alamat');
@@ -515,7 +515,7 @@ class Create_Alamat extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;		
 	}
 
@@ -527,7 +527,7 @@ class Create_Alamat extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 	}
 }

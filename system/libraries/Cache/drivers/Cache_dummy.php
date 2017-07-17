@@ -86,7 +86,7 @@ class CI_Cache_dummy extends CI_Driver {
 	/**
 	 * Cache Info
 	 *
-	 * @param 	string		user/filehits
+	 * @param 	string		User_Account/filehits
 	 * @return 	boolean		FALSE
 	 */
 	 public function cache_info($type = NULL)

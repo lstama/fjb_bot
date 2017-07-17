@@ -43,7 +43,7 @@ class Buy extends CI_Controller {
 		if ($this->session->content['message'] == 'ya') {
 
 			$this->load->model('buy_model');
-			$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+			$buy = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 
 
 			if ($type == 'instant') {
@@ -86,7 +86,7 @@ class Buy extends CI_Controller {
 		$choice = $this->session->content['message'];
 
 		$this->load->model('buy_model');
-		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+		$buy = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 
 		#var_dump($buy);
 
@@ -118,12 +118,12 @@ class Buy extends CI_Controller {
 		if (!$ada) {
 
 			$sender = new Sender;
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], "Metode pengiriman tidak valid.");
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], "Metode pengiriman tidak valid.");
 			$this->sendShipping();
 			return;
 		}
 
-		$this->buy_model->update_buy($this->session->content['user']->username, ['shipping_id' => $choice]);
+		$this->buy_model->update_buy($this->session->content['User_Account']->username, ['shipping_id' => $choice]);
 		$this->session->setLastSession('buy_confirmation');
 		$this->sendNormalConfirmation($jasa);
 	}
@@ -132,7 +132,7 @@ class Buy extends CI_Controller {
 
 		$this->load->model('buy_model');
 		$sender = new Sender;
-		$result = $this->buy_model->find_buy($this->session->content['user']->username);
+		$result = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 
 		$alamat = $this->checkAlamat($result['address_id']);
 
@@ -148,7 +148,7 @@ class Buy extends CI_Controller {
 		$biaya .= "\nBiaya pengiriman : " . $this->toRupiah($jasa['method']['cost']);
 		$biaya .= "\nTotal biaya : " . $this->toRupiah($jasa['method']['cost'] + $total_price);
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $biaya);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $biaya);
 
 		$b = array(
 				$sender->button('ya', 'Ya'),
@@ -158,7 +158,7 @@ class Buy extends CI_Controller {
 
 		$i['interactive'] = $sender->interactive(null, 'Apakah data di atas sudah benar?', "Kaskus tidak bertanggung jawab atas data yang salah.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 
 		return;
 	}
@@ -167,7 +167,7 @@ class Buy extends CI_Controller {
 
 		$this->load->model('buy_model');
 		$sender = new Sender;
-		$result = $this->buy_model->find_buy($this->session->content['user']->username);
+		$result = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 		
 		$price = $this->displayBarang($result['thread_id']);
 
@@ -175,7 +175,7 @@ class Buy extends CI_Controller {
 		$biaya = 'Total barang : ' . $result['quantity'];
 		$biaya .= "\nTotal harga barang : " . $this->toRupiah($total_price);
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $biaya);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $biaya);
 
 		$b = array(
 				$sender->button('ya', 'Ya'),
@@ -185,7 +185,7 @@ class Buy extends CI_Controller {
 
 		$i['interactive'] = $sender->interactive(null, 'Apakah data di atas sudah benar?', "Kaskus tidak bertanggung jawab atas data yang salah.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 
 		return;
 	}
@@ -201,7 +201,7 @@ class Buy extends CI_Controller {
 		}
 
 		$i['interactive'] = $sender->interactive($jasa['image'], $jasa['method']['name'], $text, null, null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function displayBarang($thread_id) {
@@ -223,7 +223,7 @@ class Buy extends CI_Controller {
 
 		$i['interactive'] = $sender->interactive($response['thread']['resources']['thumbnail'], $title, $price, null, null);
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	
 		return $response['thread']['discounted_price'];
 	}
@@ -245,15 +245,15 @@ class Buy extends CI_Controller {
 		$provinsi = $provinsi['result'];
 
 		$i['interactive'] = $sender->interactive(null, $result['name'], $result['owner_name'],null,null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $text);
 	}
 
 	public function sendShipping() {
 
 		$this->load->model('buy_model');
-		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+		$buy = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 
 		#var_dump($buy);
 
@@ -289,9 +289,9 @@ class Buy extends CI_Controller {
 			}
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], "Silakan pilih metode pengiriman.");
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], "Silakan pilih metode pengiriman.");
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 	}
 
 	public function toRupiah($number) {
@@ -334,7 +334,7 @@ class Buy extends CI_Controller {
 					'dest_id' => $result['area_id'],
 					'address_id' =>$result['id']
 				);
-			$this->buy_model->update_buy($this->session->content['user']->username, $alamat);
+			$this->buy_model->update_buy($this->session->content['User_Account']->username, $alamat);
 
 			$this->session->setLastSession('buy_quantity');
 			$this->sendQuantity();
@@ -345,7 +345,7 @@ class Buy extends CI_Controller {
 		$sender->sendReply('Alamat tidak valid.');
 
 		$this->load->model('buy_model');
-		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+		$buy = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 
 		$this->startBuy($buy['thread_id']);
 		return;
@@ -354,7 +354,7 @@ class Buy extends CI_Controller {
 	public function sendQuantity() {
 
 		$sender = new Sender;
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Silakan masukkan jumlah barang yang akan dibeli. (1 - 99)');
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], 'Silakan masukkan jumlah barang yang akan dibeli. (1 - 99)');
 	}
 
 	public function selectQuantity($type) {
@@ -364,7 +364,7 @@ class Buy extends CI_Controller {
 
 		if ((! is_numeric($jumlah)) or ($jumlah < 1) or ($jumlah > 99)) {
 
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], 'Jumlah tidak valid.');
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], 'Jumlah tidak valid.');
 			$this->sendQuantity();
 			return;
 		}
@@ -373,7 +373,7 @@ class Buy extends CI_Controller {
 		$j = array(
 				'quantity' => $jumlah
 			);
-		$this->buy_model->update_buy($this->session->content['user']->username, $j);
+		$this->buy_model->update_buy($this->session->content['User_Account']->username, $j);
 
 		if ($type == 'instant') {
 
@@ -424,14 +424,14 @@ class Buy extends CI_Controller {
 			$io['interactive'] = $sender->interactive(null, null, "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.", $b, null);
 			$i = $io;
 
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 			return;
 
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], "Silakan pilih alamat tujuan pengiriman.");
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], "Silakan pilih alamat tujuan pengiriman.");
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 
     	$this->session->setLastSession('buy_alamat');
     	return;
@@ -448,14 +448,14 @@ class Buy extends CI_Controller {
 	public function startBuy($thread_id) {
 
 		$this->load->model('buy_model');
-		$buy = $this->buy_model->find_buy($this->session->content['user']->username);
+		$buy = $this->buy_model->find_buy($this->session->content['User_Account']->username);
 		
 		if (empty($buy)) {
 
-    		$this->buy_model->create_buy(['user' => $this->session->content['user']->username]);
+    		$this->buy_model->create_buy(['User_Account' => $this->session->content['User_Account']->username]);
     	}
 
-    	$this->buy_model->update_buy($this->session->content['user']->username, ['thread_id' => $thread_id]);
+    	$this->buy_model->update_buy($this->session->content['User_Account']->username, ['thread_id' => $thread_id]);
 
 		$thread_type = $this->checkThreadType($thread_id);
 
@@ -584,7 +584,7 @@ class Buy extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;		
 	}
 
@@ -603,7 +603,7 @@ class Buy extends CI_Controller {
 
 		$i['interactive'] = $sender->interactive(null, null, $text, $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 	}
 }

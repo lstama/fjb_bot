@@ -7,7 +7,7 @@ function create_menu(basepath)
 		'<td class="td" valign="top">' +
 
 		'<ul>' +
-		'<li><a href="'+base+'index.html">User Guide Home</a></li>' +
+		'<li><a href="'+base+'index.html">UserAccount Guide Home</a></li>' +
 		'<li><a href="'+base+'toc.html">Table of Contents Page</a></li>' +
 		'</ul>' +
 
@@ -113,7 +113,7 @@ function create_menu(basepath)
 		'<li><a href="'+base+'libraries/typography.html">Typography Class</a></li>' +
 		'<li><a href="'+base+'libraries/unit_testing.html">Unit Testing Class</a></li>' +
 		'<li><a href="'+base+'libraries/uri.html">URI Class</a></li>' +
-		'<li><a href="'+base+'libraries/user_agent.html">User Agent Class</a></li>' +
+		'<li><a href="'+base+'libraries/user_agent.html">UserAccount Agent Class</a></li>' +
 		'<li><a href="'+base+'libraries/xmlrpc.html">XML-RPC Class</a></li>' +
 		'<li><a href="'+base+'libraries/zip.html">Zip Encoding Class</a></li>' +
 		'</ul>' +

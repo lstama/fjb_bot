@@ -59,7 +59,7 @@ class CI_DB_postgre_driver extends CI_DB {
 								'hostname'	=> 'host',
 								'port'		=> 'port',
 								'database'	=> 'dbname',
-								'username'	=> 'user',
+								'username'	=> 'User_Account',
 								'password'	=> 'password'
 							);
 

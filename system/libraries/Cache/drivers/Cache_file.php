@@ -129,7 +129,7 @@ class CI_Cache_file extends CI_Driver {
 	 *
 	 * Not supported by file-based caching
 	 *
-	 * @param 	string	user/filehits
+	 * @param 	string	User_Account/filehits
 	 * @return 	mixed 	FALSE
 	 */
 	public function cache_info($type = NULL)

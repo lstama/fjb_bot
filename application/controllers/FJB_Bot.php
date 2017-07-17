@@ -52,7 +52,7 @@ class FJB_Bot extends CI_Controller {
 		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/lapak_start', 'Cari Barang'));
 		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 
 	}
@@ -89,7 +89,7 @@ class FJB_Bot extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;		
 	}
 
@@ -101,7 +101,7 @@ class FJB_Bot extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-include 'User.php';
+include 'User_Account.php';
 include 'Bot_Account.php';
 include 'Main_Handler.php';
 
@@ -45,7 +45,7 @@ class Kaskus_Hooks extends CI_Controller {
 
 	public function getUserChatAccount() {
 
-		$user_chat_account 			= new User($this->request_body->from, $this->request_body->fromPlain);
+		$user_chat_account 			= new User_Account($this->request_body->from, $this->request_body->fromPlain);
 		return $user_chat_account;
 	}
 
@@ -96,9 +96,9 @@ class Kaskus_Hooks extends CI_Controller {
 			$token 			= $this->input->get('token', TRUE);
 
 			$bot_account	= new Bot_Account;
-			$user 			= new User($oauth_verifier, $oauth_token);
+			$user 			= new User_Account($oauth_verifier, $oauth_token);
 			$message 		= $token;
-			$content 		= ['bot_account' => $bot_account, 'user' => $user, 'message' => $message, 'redirect' => true];
+			$content 		= ['bot_account' => $bot_account, 'User_Account' => $user, 'message' => $message, 'redirect' => true];
 			$session 		= new User_Session($content);
 			$session->authorizeSession();
 

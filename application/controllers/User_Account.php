@@ -1,12 +1,9 @@
 <?php
 
-class User {
+class User_Account {
 
 	public $JID 			= '';
 	public $username 		= '';
-	public $token			= '';
-	public $token_secret	= '';
-	public $last_session	= '';
 	
 	public function __construct($JID, $username) {
 

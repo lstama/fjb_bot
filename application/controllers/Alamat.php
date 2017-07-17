@@ -143,12 +143,12 @@ class Alamat extends CI_Controller {
 		$provinsi = $provinsi['result'];
 
 		$i['interactive'] = $sender->interactive(null, $result['name'], $result['owner_name'],null,null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		$text = $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $text);
 		$b = array($sender->button('/alamat_daftar', 'Kembali ke Daftar Alamat'),$sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, null, null, $b, null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 	}
 
@@ -195,11 +195,11 @@ class Alamat extends CI_Controller {
 
 		
 		$text = $result['owner_name'] . "\n" . $result['address'] . "\n" . $kecamatan . ", Kota/Kab " . $kota . "\n" . $provinsi . "\nTelephone/Handphone: " . $result['owner_phone'];
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $text);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $text);
 
 		$b = array($sender->button('ya', 'Ya'),$sender->button('/alamat_daftar', 'Tidak'));
 		$i['interactive'] = $sender->interactive(null, $result['name'], 'Apakah anda yakin ingin menghapus alamat ini?',$b,null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		$this->session->setLastSession('alamat_delete_' . $id);
 
 
@@ -361,7 +361,7 @@ class Alamat extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;		
 	}
 
@@ -373,7 +373,7 @@ class Alamat extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
 		return;
 	}
 }
