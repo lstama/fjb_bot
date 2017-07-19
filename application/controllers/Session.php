@@ -13,13 +13,10 @@ class Session extends Sender {
 	public $request_token;
 	public $access_token;
 
-	public function __construct($user_account, $message) {
+	public function __construct() {
 
-		$this->status			= 'trying_to_login';
-		$this->username			= $user_account->username;
-
-		parent::__construct($user_account->JID);
-
+		parent::__construct();
+		$this->status = 'trying_to_login';
 		$this->initiateKaskusClient();
 	}
 
@@ -31,7 +28,7 @@ class Session extends Sender {
 		$this->kaskus_client->setDefaultOption('verify', false);
 	}
 
-	public function checkSession() {
+	public function isLoggedOn() {
 
 		$this->session = $this->session_model->find_session($this->username);
 
@@ -41,7 +38,7 @@ class Session extends Sender {
 			return false;
 		}
 
-		if ($this->isLoggedOn()) {
+		if ($this->isAuthorized()) {
 
 			$this->status = 'logged_on';
 			$this->last_session = $this->session['last_session'];
@@ -63,10 +60,7 @@ class Session extends Sender {
 		}
 
 		$this->createSession();
-
 		$this->sendAuthorizeUrl($error_on_authorization);
-
-		return;
 	}
 
 	public function createSession() {
@@ -110,7 +104,7 @@ class Session extends Sender {
 	}
 
 	#Call API to check user status;
-	public function isLoggedOn() {
+	public function isAuthorized() {
 
 		try {
 
@@ -178,7 +172,7 @@ class Session extends Sender {
 		$this->session_model->update_session($this->session['username'], $data);
 		$this->message = '/menu';
 
-		$this->menuUtama();
+		$this->redirectToMenuUtama();
 		echo "Authorisasi berhasil. Silakan kembali ke apps untuk mulai melanjutkan.";
 	}
 
@@ -204,5 +198,35 @@ class Session extends Sender {
 		$this->session_model->delete_session($this->session['username']);
 
 		$this->startSession(TRUE);
+	}
+
+	public function redirectToMenuUtama() {
+
+		$this->setLastSession('menu');
+
+		$buttons = [$this->createButton('/menu', 'Menu Utama')];
+		$title	 = 'Login Berhasil';
+		$caption = "Silakan klik tombol di bawah ini untuk melanjutkan.";
+		$interactive = $this->createInteractive(null, $title, $caption, $buttons);
+
+		$this->sendInteractiveMessage($interactive);
+	}
+
+	public function setLastSession($last_session) {
+
+		$this->last_session = $last_session;
+		$data = ['last_session'   => $this->last_session];
+		$this->session_model->update_session($this->session['username'], $data);
+	}
+
+	public function setUserAccount($user_account) {
+
+		$this->username	= $user_account->username;
+		$this->setJID($user_account->JID);
+	}
+
+	public function setMessage($message) {
+
+		$this->message = $message;
 	}
 }

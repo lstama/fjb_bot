@@ -1,62 +1,40 @@
 <?php
 
-include 'User_Account.php';
-include 'Bot_Account.php';
-include 'Main_Handler.php';
+include_once 'User_Account.php';
+include_once 'Main_Handler.php';
 
-class Kaskus_Hooks extends CI_Controller {
+class Kaskus_Hooks {
+
+	public $request_header;
+	public $request_body;
+	public $oauth_token;
+	public $oauth_verifier;
+	public $token;
+	private $handler;
+	private $session;
 
 	public function __construct() {
 
-		parent::__construct();
-		
-		$this->bot_account 		= new Bot_Account;
-		$this->request_header 	= $this->input->request_headers();
-		$body 					= file_get_contents('php://input');
-		$body 					= json_decode($body);
-		$this->request_body 	= $body->body;
+		if ($this->input->server('REQUEST_METHOD') == 'POST') {
+
+			$this->request_header 	= $this->input->request_headers();
+			$body 					= file_get_contents('php://input');
+			$this->request_body 	= json_decode($body);
+			$this->handler			= new Main_Handler;
+		}
 
 		if ($this->input->server('REQUEST_METHOD') == 'GET') {
+
 			$this->oauth_token 		= $this->input->get('oauth_token', TRUE);
 			$this->oauth_verifier 	= $this->input->get('oauth_verifier', TRUE);
 			$this->token 			= $this->input->get('token', TRUE);
+			$this->session			= new Session;
 		}
 	}
 
-	public function getContent($user_chat_account, $message) {
+	public function handleKaskusChatRequest() {
 
-		$user_chat_account 	= $this->getUserChatAccount();
-		$message 			= $this->getMessage();
-
-		#NOWIMHERE
-		#bikin class chat buat handle di bawah ini (ada redirect)
-		return [
-
-				'bot_account' 		=> $this->bot_account,
-				'user_chat_account'	=> $user_chat_account,
-				'message'	  		=> $message
-			];
-	}
-
-	public function getMessage() {
-
-		return $this->request_body;
-	}
-
-	public function getUserChatAccount() {
-
-		$user_chat_account 			= new User_Account($this->request_body->from, $this->request_body->fromPlain);
-		return $user_chat_account;
-	}
-
-	public function isSignatureSame(){
-
-		
-	}
-
-	public function handleKaskusChatRequest()() {
-
-		$hook_secret 			= $this->bot_account->hook_secret;
+		$hook_secret 			= $this->getHookSecret();
 		$http_body 				= $this->request_body;
 		$http_date 				= $this->request_header['Date'];
 		$request_signature 		= $this->request_header["Obrol-signature"];
@@ -64,13 +42,13 @@ class Kaskus_Hooks extends CI_Controller {
 
 		if ($request_signature == $bot_signature) {
 
-			$content 		= $this->getContent();
-			$handler       	= new Main_Handler($content);
-			
-			$handler->handleReceivedMessage();
-			
-		} 
+			$user_account = $this->getUserAccount();
+			$message = $this->getMessage();
 
+			$this->handler->setUserAccount($user_account);
+			$this->handler->setMessage($message);
+			$this->handler->handleReceivedMessage();
+		}
 		else {
 
 			echo 'failed on chat hook';
@@ -78,30 +56,38 @@ class Kaskus_Hooks extends CI_Controller {
 
 	}
 
-	public function generateKaskusChatSignature($hook_secret, $httpBody, $httpDate) {
-    	
-    	$stringToEncode = $httpDate . $httpBody;
-    	$hashedString 	= base64_encode(hash_hmac('sha256', $stringToEncode, $hook_secret, true));
-    	
-        return $hashedString;
+	private function getHookSecret() {
 
+		return getenv('BOT_HOOK_SECRET');
 	}
 
-	public function main_hook() {
+	private function generateKaskusChatSignature($hook_secret, $http_body, $http_date) {
 
-		if ($this->input->server('REQUEST_METHOD') == 'GET') {
+		$string_to_encode = $http_date . $http_body;
+		$hashed_string 	= base64_encode(hash_hmac('sha256', $string_to_encode, $hook_secret, true));
 
-			$oauth_token 	= $this->input->get('oauth_token', TRUE);
-			$oauth_verifier = $this->input->get('oauth_verifier', TRUE);
-			$token 			= $this->input->get('token', TRUE);
+		return $hashed_string;
+	}
 
-			$bot_account	= new Bot_Account;
-			$user 			= new User_Account($oauth_verifier, $oauth_token);
-			$message 		= $token;
-			$content 		= ['bot_account' => $bot_account, 'User_Account' => $user, 'message' => $message, 'redirect' => true];
-			$session 		= new User_Session($content);
-			$session->authorizeSession();
+	public function getMessage() {
 
-		}
+		return $this->request_body->body;
+	}
+
+	public function getUserAccount() {
+
+		$user_account = new User_Account($this->request_body->from, $this->request_body->fromPlain);
+		return $user_account;
+	}
+
+	public function handleKaskusWebRedirect() {
+
+		#Hanya untuk kasus redirect
+		$user_account 	= new User_Account($this->oauth_verifier, $this->oauth_token);
+
+		$message 		= $this->token;
+		$this->session->setUserAccount($user_account);
+		$this->session->setMessage($message);
+		$this->session->authorizeSession();
 	}   
 }

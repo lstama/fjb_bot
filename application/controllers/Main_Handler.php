@@ -1,40 +1,67 @@
 <?php
 
-include 'User_Session.php';
-include_once 'Sender.php';
-include_once 'FJB_Bot.php';
-
 class Main_Handler {
 
-	public $content;
-	public $session;
+	public $user_account;
+	public $message;
+	private $fjb_bot;
 
-	public function __construct($content) {
+	public function __construct() {
 
-		$this->content = $content;
+		$this->fjb_bot = new FJB_Bot;
 	}
 
 	public function handleReceivedMessage() {
 
-		if ($this->content['message'] == 'halo') {
+		if ($this->isMessageLengthValid()) {
 
-			$sender = new Sender;
-			$sender->sendReply('Hai '.$this->content['User_Account']->username.'!');
-			return;
+			#Default
+			if ($this->message == 'halo') {
+
+				echo 'Halo juga!';
+				return;
+			}
+
+			$session = $this->createSession();
+			if ($session->isLoggedOn()) {
+
+				#call the bot
+			} else {
+
+				#do something
+			}
 		}
 
-		$this->session = new User_Session($this->content);
+	}
 
-		if ($this->session->status === 'logged_on') {
+	public function isMessageLengthValid() {
 
-			#call the bot
-			$bot = new FJB_Bot($this->session);
-			$bot->main();
+		if (strlen($this->message) <= 100) {
 
-		} else {
-
-			#do something
+			return true;
 		}
+		else {
+
+			return false;
+		}
+	}
+
+	public function createSession() {
+
+		$session = new Session();
+		$session->setUserAccount($this->user_account);
+		$session->setMessage($this->message);
+		return $session;
+	}
+
+	public function setUserAccount($user_account) {
+
+		$this->user_account = $user_account;
+	}
+
+	public function setMessage($message) {
+
+		$this->message = $message;
 	}
 
 }

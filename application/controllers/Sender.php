@@ -8,11 +8,10 @@ class Sender extends Bot_Account {
     private $client;
 	public $JID;
 
-    public function __construct($JID) {
+    public function __construct() {
 
     	parent::__construct();
     	$this->client = new Client(['http_errors' => false]);
-    	$this->JID	  = $JID;
     }
 
 	public function sendInteractiveReply($message) {

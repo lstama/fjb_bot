@@ -1,31 +1,37 @@
 <?php 
 
 require 'vendor/autoload.php';
-include_once 'Sender.php';
-include_once 'Alamat.php';
-include_once 'Lapak.php';
-include_once 'Buy.php';
 
 class FJB_Bot extends CI_Controller {
 
 	public $session;
 
-	public function __construct($sess) {
-		
-		$this->session = $sess;
+
+
+	public function getPrefix() {
+
+		$command = explode('_', $this->session->message, 2);
+		return $command[0];
+	}
+
+	public function getSuffix() {
+
+		$command = explode('_', $this->session->message, 2);
+		return $command[1];
 	}
 
 	public function main() {
 
-		$command = explode('_', $this->session->content['message'], 2);
+		$prefix = $this->getPrefix();
+		$suffix = $this->getSuffix();
 
-		switch ($command[0]) {
+		switch ($prefix) {
 		    case '/menu':
-		        $this->menu();
+		        $this->sendMenu();
 		        break;
 		        
 		    case '/alamat':
-		        $alamat = new Alamat($this->session);
+		        $alamat = new Alamat;
 		        $alamat->main($command[1]);
 		        break;
 
@@ -44,7 +50,7 @@ class FJB_Bot extends CI_Controller {
 		}
 	}
 
-	public function menu() {
+	public function sendMenu() {
 
 		$this->session->setLastSession('menu');
 
