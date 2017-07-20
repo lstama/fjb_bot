@@ -15,7 +15,7 @@ class Create_alamat_model extends CI_Model {
 			return $query->result_array();
 		}
 
-		$query = $this->db->get_where('create_alamat', array('User_Account' => $user));
+		$query = $this->db->get_where('create_alamat', array('user' => $user));
 		return $query->row_array();
 	}
 
@@ -26,12 +26,12 @@ class Create_alamat_model extends CI_Model {
 
   	public function update_create_alamat($user, $data){
 
-      	$this->db->where('User_Account',$user);
+      	$this->db->where('user',$user);
       	return $this->db->update('create_alamat', $data); //boolean
   }
 
   	public function delete_create_alamat($user = null) {
 
-  		return $this->db->where('User_Account', $user)->delete('create_alamat');
+  		return $this->db->where('user', $user)->delete('create_alamat');
   	}
 }

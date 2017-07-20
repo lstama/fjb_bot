@@ -5,6 +5,12 @@ class Request_Result {
 	public $success;
 	public $content;
 
+	public function __construct($success = null, $content = null) {
+
+		$this->setSuccess($success);
+		$this->setContent($content);
+	}
+
 	public function getSuccess() {
 
 		return $this->success;

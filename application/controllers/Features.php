@@ -1,120 +1,66 @@
 <?php
 
-require 'vendor/autoload.php';
+include_once 'Request.php';
 
-class Features {
+class Features extends Request {
 
-	public $session;
+	public $message_now;
+	public $session_now;
 
-	public function get($url, $query = null) {
+	public function getPrefix($command) {
 
-		try {
+		$temp = explode('_', $command, 2);
+		if (isset($temp[0])) {
 
-			if (isset($query)) {
-
-				$response = $this->session->kaskus_client->get($url, $query);
-			} else {
-
-				$response = $this->session->kaskus_client->get($url);
-			}
-
-			return $this->createSuccessResult($response);
+			return $temp[0];
 		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
-
-			return $this->createRequestExceptionResult($exception);
-		}
-		catch (\Exception $exception) {
-
-			return $this->createRequestExceptionResult($exception);
-		}
-
+		return '';
 	}
 
-	public function post($url, $parameter) {
+	public function getSuffix($command) {
 
-		try {
+		$temp = explode('_', $command, 2);
+		if (isset($temp[1])) {
 
-			$response = $this->session->kaskus_client->post($url,['body' => $parameter]);
-			return $this->createSuccessResult($response);
+			return $temp[1];
 		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
-
-			return $this->createRequestExceptionResult($exception);
-		}
-		catch (\Exception $exception) {
-
-			return $this->createRequestExceptionResult($exception);
-		}
+		return '';
 	}
 
-	public function createSuccessResult($response) {
+	public function sendUnrecognizedCommandDialog() {
 
-		$result = new Request_Result();
-		$result->setSuccess(true);
-		$result->setContent($response->json());
-		return $result;
-	}
+		$this->session->setLastSession('unrecognized_command');
 
-	public function createRequestExceptionResult($exception) {
-
-		$response = $exception->getMessage();
-		$this->errorOccured($response);
-
-		$result = new Request_Result();
-		$result->setSuccess(false);
-		$result->setContent($response);
-		return $result;
-	}
-
-
-	public function errorOccured($response = null) {
-
-		$this->session->setLastSession('error_occured');
-
-		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
-		$text = "Terjadi Kesalahan pada Server.\nSilakan kembali ke menu utama.";
-		if (isset($response)) {
-
-			$text = $response;
-		}
-
-		$interactive = $this->session->createInteractive(null, null, $text, $buttons, null);
+		$buttons 	 = array($this->session->createButton('/menu', 'Kembali ke Menu Utama'));
+		$title 		 = "Perintah Tidak Dikenal";
+		$caption	 = "Silakan masukkan perintah yang benar atau kembali ke menu utama.";
+		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
 		$this->session->sendInteractiveMessage($interactive);
+		return;
 	}
 
-	public function setSession(Session $session) {
+	public function getMessageNow() {
 
-		$this->session = $session;
+		return $this->message_now;
 	}
 
 
-	#TODO: pindah ke Location extend this
-//	public function getProvince($id) {
-//
-//		$response = $this->get('v1/fjb/location/provinces/' . $id);
-//		if (! $response['success']) return ['success' => false, 'result' => ''];
-//
-//		return ['success' => true, 'result' => $response['result']['name']];
-//
-//	}
-//
-//	public function getCity($id) {
-//
-//		$response = $this->get('v1/fjb/location/cities/' . $id);
-//		if (! $response['success']) return ['success' => false, 'result' => ''];
-//
-//		return ['success' => true, 'result' => $response['result']['name']];
-//
-//	}
-//
-//	public function getArea($id) {
-//
-//		$response = $this->get('v1/fjb/location/areas/' . $id);
-//		if (! $response['success']) return ['success' => false, 'result' => ''];
-//
-//		return ['success' => true, 'result' => $response['result']['name']];
-//
-//	}
+	public function setMessageNow($message_now) {
+
+		$this->message_now = $message_now;
+	}
+
+
+	public function getSessionNow() {
+
+		return $this->session_now;
+	}
+
+
+	public function setSessionNow($session_now) {
+
+		$this->session_now = $session_now;
+	}
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-class User_Account {
+class user {
 
 	public $JID 			= '';
 	public $username 		= '';

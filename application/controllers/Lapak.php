@@ -2,7 +2,7 @@
 
 require 'vendor/autoload.php';
 include_once 'Sender.php';
-include_once 'Post_Location.php';
+include_once 'FJB_Old.php';
 
 class Lapak extends CI_Controller {
 
@@ -77,7 +77,7 @@ class Lapak extends CI_Controller {
 		$i['interactive'] = $sender->interactive(null, $title, $price, null, null);
 
 		#title&price
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		
 		$photos['interactives'] = [];
 		foreach ($response['thread']['resources']['images_thumbnail'] as $key => $value) {
@@ -89,9 +89,9 @@ class Lapak extends CI_Controller {
 
 		#var_dump($photos);
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $photos);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $photos);
 
-		$loc = new Post_Location();
+		$loc = new FJBOld();
 		#var_dump($loc);
 		$attribute = "Lokasi : " . $loc->location[$response['thread']['item_location']];
 		$attribute .= "\nKondisi : " . $loc->condition[$response['thread']['item_condition']];
@@ -106,16 +106,16 @@ class Lapak extends CI_Controller {
 			$attribute .= "\n" . $a['attribute'] . " : " . $a['value'];
 		}
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $attribute);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $attribute);
 
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $response['posts'][0]['post'][0]['text']);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $response['posts'][0]['post'][0]['text']);
 
 		$button = array($sender->button('/buy_' . $response['thread']['thread_id'], 'Beli'), $sender->button('back', 'Kembali Ke Pencarian'), $sender->button('/menu', 'Kembali Ke Menu Utama'));
 
 		$i['interactive'] = $sender->interactive(null, null, null, $button, null);
 
 		#button
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 
 		#$this->session->setLastSession('lapak_details_' . $thread_id);
 		return;
@@ -192,10 +192,10 @@ class Lapak extends CI_Controller {
 			$b = array($sender->button('/menu', 'Kembali ke Menu Utama.'));
 			$tmp['interactive'] = $sender->interactive(null, "Barang Tidak Ditemukan", null, $b, null);
 			$i = $tmp;
-			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+			$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 			return;
 		}
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 
 		$b = [];
 		if ($page > 1) {
@@ -210,7 +210,7 @@ class Lapak extends CI_Controller {
 
 		array_push($b, $sender->button('/menu', 'Kembali Ke Menu Utama'));		
 		$tp['interactive'] = $sender->interactive(null, null, null, $b, null);
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $tp);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $tp);
 
 		return;
 	}
@@ -313,7 +313,7 @@ class Lapak extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		return;		
 	}
 
@@ -325,7 +325,7 @@ class Lapak extends CI_Controller {
 		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
 		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
+		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['user'], $i);
 		return;
 	}
 }

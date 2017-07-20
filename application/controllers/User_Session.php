@@ -41,7 +41,7 @@ class User_Session extends CI_Controller {
 	public function checkSession() {
 
 		$this->load->model('session_model');
-		$this->session = $this->session_model->find_session($this->content['User_Account']->username);
+		$this->session = $this->session_model->find_session($this->content['user']->username);
 		
 		if (empty($this->session)) {
 
@@ -54,7 +54,7 @@ class User_Session extends CI_Controller {
 
 			
     		$this->oauth_client->setCredentials($this->session['token'], $this->session['token_secret']);
-			$response = $this->oauth_client->get('User_Account');
+			$response = $this->oauth_client->get('user');
 			$temp = $response->json();
     	}
     	catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
@@ -90,8 +90,8 @@ class User_Session extends CI_Controller {
 		
 		$this->load->model('session_model');
         $data = array(
-			'username'       => $this->content['User_Account']->username,
-			'JID'       	 => $this->content['User_Account']->JID,
+			'username'       => $this->content['user']->username,
+			'JID'       	 => $this->content['user']->JID,
 			'token'          => $this->request_token['oauth_token'],
 			'token_secret'   => $this->request_token['oauth_token_secret'],
 			'last_session'   => 'trying_to_login'
@@ -110,7 +110,7 @@ class User_Session extends CI_Controller {
 		if ($not_reply) {
 
 			$i['interactive']['caption'] = "Pastikan anda sudah logout dari akun yang sebelumnya.\nKlik tombol di bawah untuk authorize FJB Bot.";
-			$sender->sendMessage($this->content['bot_account'], $this->content['User_Account'], $i);
+			$sender->sendMessage($this->content['bot_account'], $this->content['user'], $i);
 			return;
 		}
 
@@ -131,7 +131,7 @@ class User_Session extends CI_Controller {
 		$this->request_token = $this->oauth_client->getRequestToken($this->content['bot_account']->bot_callback_url);
 
 		$this->createSession();
-		$this->session = $this->session_model->find_session($this->content['User_Account']->username);
+		$this->session = $this->session_model->find_session($this->content['user']->username);
 	
 		#Send authorize url to user
     	$this->oauth_client->setCredentials($this->session['token'], $this->session['token_secret']);
@@ -144,7 +144,7 @@ class User_Session extends CI_Controller {
 	public function authorizeSession() {
 
 		$this->load->model('session_model');
-		$this->session = $this->session_model->find_token($this->content['User_Account']->username);
+		$this->session = $this->session_model->find_token($this->content['user']->username);
 		$this->oauth_client->setCredentials($this->content['message'], $this->session['token_secret']);
 		$this->access_token = $this->oauth_client->getAccessToken();
 
@@ -156,8 +156,8 @@ class User_Session extends CI_Controller {
 
 				$this->status = 'trying_to_login';
 				$this->last_session = 'trying_to_login';
-				$this->content['User_Account']->username = $this->session['username'];
-				$this->content['User_Account']->JID = $this->session['JID'];
+				$this->content['user']->username = $this->session['username'];
+				$this->content['user']->JID = $this->session['JID'];
 
 				$this->session_model->delete_session($this->session['username']);
 
@@ -175,14 +175,14 @@ class User_Session extends CI_Controller {
 				'token_secret'   => $this->access_token['oauth_token_secret'],
 				'last_session'   => $this->last_session,
 				'userid' 		 => $this->access_token['userid'],
-				'User_Account' => $this->access_token['username']
+				'user' => $this->access_token['username']
 				);
 
 
 			$this->session_model->update_session($this->session['username'], $data);
 			$this->content['message'] = '/menu';
-			$this->content['User_Account']->username = $this->session['username'];
-			$this->content['User_Account']->JID = $this->session['JID'];
+			$this->content['user']->username = $this->session['username'];
+			$this->content['user']->JID = $this->session['JID'];
 
 			$this->menuUtama();
 			echo "Authorisasi berhasil. Silakan kembali ke apps untuk mulai melanjutkan.";
@@ -195,8 +195,8 @@ class User_Session extends CI_Controller {
 			$this->status = 'trying_to_login';
 			$this->last_session = 'trying_to_login';
 			
-			$this->content['User_Account']->username = $this->session['username'];
-			$this->content['User_Account']->JID = $this->session['JID'];
+			$this->content['user']->username = $this->session['username'];
+			$this->content['user']->JID = $this->session['JID'];
 			$this->session_model->delete_session($this->session['username']);
 			
 			$this->startSession(TRUE);
@@ -214,7 +214,7 @@ class User_Session extends CI_Controller {
 		$b = array($sender->button('/menu', 'Menu Utama'));
 		$i['interactive'] = $sender->interactive(null, "Login Berhasil", "Silakan klik tombol di bawah ini untuk melanjutkan.", $b, null);
 		
-		$sender->sendMessage($this->content['bot_account'], $this->content['User_Account'], $i);
+		$sender->sendMessage($this->content['bot_account'], $this->content['user'], $i);
 		return;
 
 	}

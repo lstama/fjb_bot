@@ -76,7 +76,7 @@ function &DB($params = '', $active_record_override = NULL)
 		$params = array(
 							'dbdriver'	=> $dns['scheme'],
 							'hostname'	=> (isset($dns['host'])) ? rawurldecode($dns['host']) : '',
-							'username'	=> (isset($dns['User_Account'])) ? rawurldecode($dns['User_Account']) : '',
+							'username'	=> (isset($dns['user'])) ? rawurldecode($dns['user']) : '',
 							'password'	=> (isset($dns['pass'])) ? rawurldecode($dns['pass']) : '',
 							'database'	=> (isset($dns['path'])) ? rawurldecode(substr($dns['path'], 1)) : ''
 						);

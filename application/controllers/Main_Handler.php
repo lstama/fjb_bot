@@ -1,15 +1,12 @@
 <?php
 
+include_once 'Session.php';
+include_once 'FJB_Bot.php';
+
 class Main_Handler {
 
 	public $user_account;
 	public $message;
-	private $fjb_bot;
-
-	public function __construct() {
-
-		$this->fjb_bot = new FJB_Bot;
-	}
 
 	public function handleReceivedMessage() {
 
@@ -25,10 +22,11 @@ class Main_Handler {
 			$session = $this->createSession();
 			if ($session->isLoggedOn()) {
 
-				#call the bot
-			} else {
-
-				#do something
+				$bot = new FJB_Bot;
+				$bot->setMessageNow($session->message);
+				$bot->setSessionNow($session->last_session);
+				$bot->setSession($session);
+				$bot->main();
 			}
 		}
 

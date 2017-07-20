@@ -1,143 +1,72 @@
 <?php 
 
-require 'vendor/autoload.php';
+include_once 'Features.php';
+include_once 'Alamat.php';
 
-class FJB_Bot extends CI_Controller {
-
-	public $session;
-
-
-
-	public function getPrefix() {
-
-		$command = explode('_', $this->session->message, 2);
-		return $command[0];
-	}
-
-	public function getSuffix() {
-
-		$command = explode('_', $this->session->message, 2);
-		return $command[1];
-	}
+class FJB_Bot extends Features {
 
 	public function main() {
 
-		$prefix = $this->getPrefix();
-		$suffix = $this->getSuffix();
+		$message_prefix = $this->getPrefix($this->message_now);
+		$message_suffix = $this->getSuffix($this->message_now);
 
-		switch ($prefix) {
-		    case '/menu':
-		        $this->sendMenu();
-		        break;
-		        
-		    case '/alamat':
-		        $alamat = new Alamat;
-		        $alamat->main($command[1]);
-		        break;
+		switch ($message_prefix) {
 
-		    case '/lapak':
-		        $lapak = new Lapak($this->session);
-		        $lapak->main($command[1]);
-		        break;
+			case '/menu':
 
-		    case '/buy':
-		        $buy = new Buy($this->session);
-		        $buy->startBuy($command[1]);
-		        break;
+				$this->sendMenuDialog();
+				break;
+
+			case '/alamat':
+
+				$alamat = new Alamat;
+				$alamat->setMessageNow($message_suffix);
+				$alamat->setSessionNow($this->session_now);
+				$alamat->setSession($this->session);
+				$alamat->main();
+				break;
 
 		    default:
-		        $this->lastSessionSpecific();
+
+		    	$this->lastSessionSpecific();
 		}
-	}
-
-	public function sendMenu() {
-
-		$this->session->setLastSession('menu');
-
-		$sender = new Sender();
-		$b = array($sender->button('/alamat_daftar', 'Daftar Alamat'), $sender->button('/alamat_create', 'Buat Alamat Baru'), $sender->button('/lapak_start', 'Cari Barang'));
-		$i['interactive'] = $sender->interactive(null, "Menu Utama", "Silakan pilih menu di bawah untuk melanjutkan.", $b, null);
-		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
-		return;
-
 	}
 
 	public function lastSessionSpecific() {
 
-		$last_session = explode('_', $this->session->last_session, 2);
-		switch ($last_session[0]) {
-		    case 'alamat':
-		        $alamat = new Alamat($this->session);
-		        $alamat->lastSessionSpecific($last_session[1]);
-		        break;
+		$session_prefix = $this->getPrefix($this->session_now);
+		$session_suffix = $this->getSuffix($this->session_now);
 
-		    case 'lapak':
-		        $lapak = new Lapak($this->session);
-		        $lapak->lastSessionSpecific($last_session[1]);
-		        break;
+		switch ($session_prefix) {
 
-		    case 'buy':
-		        $buy = new Buy($this->session);
-		        $buy->createBuySession($last_session[1]);
-		        break;
+			case 'alamat':
+
+				$alamat = new Alamat;
+				$alamat->setMessageNow($this->message_now);
+				$alamat->setSessionNow($session_suffix);
+				$alamat->setSession($this->session);
+				$alamat->lastSessionSpecific();
+				break;
 
 		    default:
-		        $this->unrecognizedCommand();
+
+		    	$this->sendUnrecognizedCommandDialog();
 		}
 	}
 
-	public function unrecognizedCommand() {
+	public function sendMenuDialog() {
 
-		$this->session->setLastSession('unrecognizedCommand');
+		$this->session->setLastSession('menu');
 
-		$sender = new Sender();
-		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
-		$i['interactive'] = $sender->interactive(null, "Perintah Tidak Dikenal", "Silakan masukkan perintah yang benar atau kembali ke menu utama.", $b, null);
-		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
-		return;		
+		$buttons = [
+			$this->session->createButton('/alamat_daftar', 'Daftar Alamat'),
+			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
+			$this->session->createButton('/lapak_start', 'Cari Barang')
+			];
+		$title	 	 = "Menu Utama";
+		$caption 	 = "Silakan pilih menu di bawah untuk melanjutkan.";
+		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
+
+		$this->session->sendInteractiveMessage($interactive);
 	}
-
-	public function errorOccured() {
-
-		$this->session->setLastSession('errorOccured');
-
-		$sender = new Sender();
-		$b = array($sender->button('/menu', 'Kembali ke Menu Utama'));
-		$i['interactive'] = $sender->interactive(null, "Terjadi Kesalahan pada Server", "Silakan kembali ke menu utama.", $b, null);
-		
-		$sender->sendMessage($this->session->content['bot_account'], $this->session->content['User_Account'], $i);
-		return;
-	}
-
-	
-
-	public function get($parameter) {
-
-		try {
-
-    		$response = $this->session->oauth_client->get($parameter);
-			$temp = $response->json();
-    	}
-    	catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
- 	  		// Kaskus Api returned an error
-    		$response =  $exception->getMessage();
-		} 
-		catch (\Exception $exception) {
-    		 // some other error occured
-    		$response =  $exception->getMessage();
-		}
-
-		#error occured
-		if ( (gettype($response) == 'string') or (isset($temp) == FALSE) ) {
-
-			$this->errorOccured();
-			echo $response;
-			return ['success' => false, 'result' => ''];
-		}
-
-		return ['success' => true, 'result' => $temp];
-	}
-
 }

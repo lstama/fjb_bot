@@ -3,9 +3,10 @@
 include_once 'User_Account.php';
 include_once 'Main_Handler.php';
 
-class Kaskus_Hooks {
+class Kaskus_Hooks extends CI_Controller {
 
 	public $request_header;
+	public $http_body;
 	public $request_body;
 	public $oauth_token;
 	public $oauth_verifier;
@@ -15,11 +16,13 @@ class Kaskus_Hooks {
 
 	public function __construct() {
 
+		parent::__construct();
+
 		if ($this->input->server('REQUEST_METHOD') == 'POST') {
 
 			$this->request_header 	= $this->input->request_headers();
-			$body 					= file_get_contents('php://input');
-			$this->request_body 	= json_decode($body);
+			$this->http_body 		= file_get_contents('php://input');
+			$this->request_body 	= json_decode($this->http_body);
 			$this->handler			= new Main_Handler;
 		}
 
@@ -35,7 +38,7 @@ class Kaskus_Hooks {
 	public function handleKaskusChatRequest() {
 
 		$hook_secret 			= $this->getHookSecret();
-		$http_body 				= $this->request_body;
+		$http_body 				= $this->http_body;
 		$http_date 				= $this->request_header['Date'];
 		$request_signature 		= $this->request_header["Obrol-signature"];
 		$bot_signature 			= $this->generateKaskusChatSignature($hook_secret, $http_body, $http_date);
@@ -76,14 +79,14 @@ class Kaskus_Hooks {
 
 	public function getUserAccount() {
 
-		$user_account = new User_Account($this->request_body->from, $this->request_body->fromPlain);
+		$user_account = new user($this->request_body->from, $this->request_body->fromPlain);
 		return $user_account;
 	}
 
 	public function handleKaskusWebRedirect() {
 
 		#Hanya untuk kasus redirect
-		$user_account 	= new User_Account($this->oauth_verifier, $this->oauth_token);
+		$user_account 	= new user($this->oauth_verifier, $this->oauth_token);
 
 		$message 		= $this->token;
 		$this->session->setUserAccount($user_account);

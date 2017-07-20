@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 use GuzzleHttp\Client;
+include_once 'Bot_Account.php';
 
 class Sender extends Bot_Account {
 
@@ -17,13 +18,13 @@ class Sender extends Bot_Account {
 	public function sendInteractiveReply($message) {
 
 		$data['interactive'] = $message;
-		$this->sendReply($message);
+		$this->sendReply($data);
 	}
 
 	public function sendMultipleInteractiveReply($message) {
 
 		$data['interactives'] = $message;
-		$this->sendReply($message);
+		$this->sendReply($data);
 	}
 
 	public function sendReply($message) {
@@ -39,13 +40,13 @@ class Sender extends Bot_Account {
 	public function sendInteractiveMessage($message) {
 
 		$data['interactive'] = $message;
-		$this->sendMessage($message);
+		$this->sendMessage($data);
 	}
 
 	public function sendMultipleInteractiveMessage($message) {
 
 		$data['interactives'] = $message;
-		$this->sendMessage($message);
+		$this->sendMessage($data);
 	}
 
 	public function sendMessage($message) {

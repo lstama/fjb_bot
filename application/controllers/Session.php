@@ -1,15 +1,18 @@
 <?php
 
 require 'vendor/autoload.php';
+include 'Sender.php';
 
 class Session extends Sender {
 
 	public $status;
 	public $username;
 	public $message;
+
+	/** @var \Kaskus\KaskusClient $kaskus_client */
 	public $kaskus_client;
 	public $last_session;
-	public $session;
+	public $session_from_database;
 	public $request_token;
 	public $access_token;
 
@@ -23,16 +26,15 @@ class Session extends Sender {
 	public function initiateKaskusClient(){
 
 		$this->kaskus_client = new \Kaskus\KaskusClient($this->consumer_key, $this->consumer_secret, $this->kaskus_api);
-
 		#TODO : Delete this when in production.
 		$this->kaskus_client->setDefaultOption('verify', false);
 	}
 
 	public function isLoggedOn() {
 
-		$this->session = $this->session_model->find_session($this->username);
+		$this->session_from_database = $this->session_model->find_session($this->username);
 
-		if (empty($this->session)) {
+		if (empty($this->session_from_database)) {
 
 			$this->startSession();
 			return false;
@@ -41,7 +43,7 @@ class Session extends Sender {
 		if ($this->isAuthorized()) {
 
 			$this->status = 'logged_on';
-			$this->last_session = $this->session['last_session'];
+			$this->last_session = $this->session_from_database['last_session'];
 			return true;
 		}
 		else {
@@ -59,11 +61,11 @@ class Session extends Sender {
 			$this->initiateKaskusClient();
 		}
 
-		$this->createSession();
+		$this->createSessionInDatabase();
 		$this->sendAuthorizeUrl($error_on_authorization);
 	}
 
-	public function createSession() {
+	public function createSessionInDatabase() {
 
 		$this->getRequestToken();
 
@@ -76,7 +78,7 @@ class Session extends Sender {
 		];
 
 		$this->session_model->create_session($data);
-		$this->session = $this->session_model->find_session($this->username);
+		$this->session_from_database = $this->session_model->find_session($this->username);
 	}
 
 	public function getRequestToken() {
@@ -86,9 +88,9 @@ class Session extends Sender {
 
 	public function sendAuthorizeUrl($error_on_authorization = FALSE) {
 
-		$this->kaskus_client->setCredentials($this->session['token'], $this->session['token_secret']);
+		$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
 
-		$authorize_url = $this->kaskus_client->getAuthorizeUrl($this->session['token']);
+		$authorize_url = $this->kaskus_client->getAuthorizeUrl($this->session_from_database['token']);
 		$buttons 	   = [$this->createButton($authorize_url, 'Authorize')];
 		$title		   = "Anda belum login";
 		$caption 	   = "Klik tombol di bawah untuk authorize FJB Bot.";
@@ -100,7 +102,7 @@ class Session extends Sender {
 							\nKlik tombol di bawah untuk authorize FJB Bot.";
 		}
 
-		$this->sendMessage($interactive);
+		$this->sendInteractiveMessage($interactive);
 	}
 
 	#Call API to check user status;
@@ -108,30 +110,28 @@ class Session extends Sender {
 
 		try {
 
-			$this->kaskus_client->setCredentials($this->session['token'], $this->session['token_secret']);
-			$response = $this->kaskus_client->get('User_Account');
+			$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
+			$response = $this->kaskus_client->get('user');
 			return true;
 		}
 		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
 
-			$response =  $exception->getMessage();
 			return false;
 		}
 		catch (\Exception $exception) {
 
-			$response =  $exception->getMessage();
 			return false;
 		}
 	}
 
 	public function authorizeSession() {
 
-		$this->session = $this->session_model->find_token($this->username);
+		$this->session_from_database = $this->session_model->find_token($this->username);
 
-		$this->username = $this->session['username'];
-		$this->setJID($this->session['JID']);
+		$this->username = $this->session_from_database['username'];
+		$this->setJID($this->session_from_database['JID']);
 
-		$this->kaskus_client->setCredentials($this->message, $this->session['token_secret']);
+		$this->kaskus_client->setCredentials($this->message, $this->session_from_database['token_secret']);
 
 		$this->access_token = $this->kaskus_client->getAccessToken();
 
@@ -169,7 +169,7 @@ class Session extends Sender {
 			'user' => $this->access_token['username']
 		);
 
-		$this->session_model->update_session($this->session['username'], $data);
+		$this->session_model->update_session($this->session_from_database['username'], $data);
 		$this->message = '/menu';
 
 		$this->redirectToMenuUtama();
@@ -195,7 +195,7 @@ class Session extends Sender {
 		$this->status 		= 'trying_to_login';
 		$this->last_session = 'trying_to_login';
 
-		$this->session_model->delete_session($this->session['username']);
+		$this->session_model->delete_session($this->session_from_database['username']);
 
 		$this->startSession(TRUE);
 	}
@@ -216,7 +216,7 @@ class Session extends Sender {
 
 		$this->last_session = $last_session;
 		$data = ['last_session'   => $this->last_session];
-		$this->session_model->update_session($this->session['username'], $data);
+		$this->session_model->update_session($this->session_from_database['username'], $data);
 	}
 
 	public function setUserAccount($user_account) {

@@ -15,7 +15,7 @@ class Buy_model extends CI_Model {
 			return $query->result_array();
 		}
 
-		$query = $this->db->get_where('buy', array('User_Account' => $user));
+		$query = $this->db->get_where('buy', array('user' => $user));
 		return $query->row_array();
 	}
 
@@ -26,12 +26,12 @@ class Buy_model extends CI_Model {
 
   	public function update_buy($user, $data){
 
-      	$this->db->where('User_Account',$user);
+      	$this->db->where('user',$user);
       	return $this->db->update('buy', $data); //boolean
   }
 
   	public function delete_buy($user = null) {
 
-  		return $this->db->where('User_Account', $user)->delete('buy');
+  		return $this->db->where('user', $user)->delete('buy');
   	}
 }
