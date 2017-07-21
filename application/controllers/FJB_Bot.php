@@ -2,6 +2,7 @@
 
 include_once 'Features.php';
 include_once 'Alamat.php';
+include_once 'Lapak.php';
 
 class FJB_Bot extends Features {
 
@@ -26,6 +27,15 @@ class FJB_Bot extends Features {
 				$alamat->main();
 				break;
 
+			case '/lapak':
+
+				$lapak = new Lapak;
+				$lapak->setMessageNow($message_suffix);
+				$lapak->setSessionNow($this->session_now);
+				$lapak->setSession($this->session);
+				$lapak->main();
+				break;
+
 		    default:
 
 		    	$this->lastSessionSpecific();
@@ -46,6 +56,15 @@ class FJB_Bot extends Features {
 				$alamat->setSessionNow($session_suffix);
 				$alamat->setSession($this->session);
 				$alamat->lastSessionSpecific();
+				break;
+
+			case 'lapak':
+
+				$lapak = new Lapak;
+				$lapak->setMessageNow($this->message_now);
+				$lapak->setSessionNow($session_suffix);
+				$lapak->setSession($this->session);
+				$lapak->lastSessionSpecific();
 				break;
 
 		    default:
