@@ -55,4 +55,11 @@ class FJB extends Features {
 
 		return new Request_Result($response->getSuccess(),$response->content['name']);
 	}
+
+	public function toRupiah($number) {
+
+		$money_number = 'Rp ';
+		$money_number .= number_format($number,2,',','.');
+		return $money_number;
+	}
 }

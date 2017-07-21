@@ -36,6 +36,15 @@ class FJB_Bot extends Features {
 				$lapak->main();
 				break;
 
+			case '/buy':
+
+				$buy = new Buy;
+				$buy->setMessageNow($message_suffix);
+				$buy->setSessionNow($this->session_now);
+				$buy->setSession($this->session);
+				$buy->main();
+				break;
+
 		    default:
 
 		    	$this->lastSessionSpecific();
@@ -65,6 +74,15 @@ class FJB_Bot extends Features {
 				$lapak->setSessionNow($session_suffix);
 				$lapak->setSession($this->session);
 				$lapak->lastSessionSpecific();
+				break;
+
+			case 'buy':
+
+				$buy = new Buy;
+				$buy->setMessageNow($this->message_now);
+				$buy->setSessionNow($session_suffix);
+				$buy->setSession($this->session);
+				$buy->lastSessionSpecific();
 				break;
 
 		    default:
