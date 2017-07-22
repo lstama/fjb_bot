@@ -1,9 +1,11 @@
-# CodeIgniter 2
-Open Source PHP Framework (originally from EllisLab)
+# FJB Kaskus Bot
 
-For more info, please refer to the user-guide at http://www.codeigniter.com/userguide2/  
-(also available within the download package for offline use)
+Tested using :
 
-**WARNING:** *CodeIgniter 2.x is no longer under development and only receives security patches until October 31st, 2015.
-Please update your installation to the latest CodeIgniter 3.x version available
-(upgrade instructions [here](http://www.codeigniter.com/userguide3/installation/upgrade_300.html)).*
+PHP : 5.6.30
+
+Apache : 2.4.25
+
+MySQL : 10.1.21-MariaDB mariadb.org binary distribution
+
+MySQL database structure included as my_database.sql
