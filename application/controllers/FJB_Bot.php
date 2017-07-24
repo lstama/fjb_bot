@@ -3,6 +3,7 @@
 include_once 'Features.php';
 include_once 'Alamat.php';
 include_once 'Lapak.php';
+include_once 'Buy.php';
 
 class FJB_Bot extends Features {
 

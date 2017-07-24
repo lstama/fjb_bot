@@ -327,14 +327,14 @@ class Buy extends FJB {
 		#TODO
 		$result = $this->session->buy_model->find_buy($this->session->username);
 
+		$barang = $this->getBarang($result['thread_id']);
+		$this->displayBarang($barang);
+
 		$alamat = $this->getAlamat($result['address_id']);
 
 		$this->displayAlamat($alamat);
 
 		$this->displayJasaPengiriman($jasa);
-
-		$barang = $this->getBarang($result['thread_id']);
-		$this->displayBarang($barang);
 
 		$price = $barang['thread']['discounted_price'];
 		$total_price = $result['quantity'] * $price;
@@ -354,7 +354,7 @@ class Buy extends FJB {
 		$caption = "Kaskus tidak bertanggung jawab atas data yang salah.";
 		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
-		$this->session->sendMessage($interactive);
+		$this->session->sendInteractiveMessage($interactive);
 		return;
 	}
 

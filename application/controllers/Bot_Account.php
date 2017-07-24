@@ -24,7 +24,7 @@ class Bot_Account extends CI_Controller {
         $this->consumer_secret  	= getenv('BOT_CONSUMER_SECRET');
 
         #TODO : getenv('BOT_CALLBACK_URL'); in production.
-        $this->callback_url     	= 'https://5443fe54.ngrok.io/refactor/fjb_bot/main_hook';
+        $this->callback_url     	= 'https://6621a92b.ngrok.io/refactor/fjb_bot/main_hook';
 
         #TODO : getenv('BOT_SEND_MASS_API'); in production.
 		$this->send_mass_api		= 'https://api.obrol.id/api/v1/bot/send-mass';

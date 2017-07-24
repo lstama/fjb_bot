@@ -145,6 +145,12 @@ class Lapak extends FJB {
 		if (! $response->isSuccess()) return;
 		$response = $response->getContent();
 
+		if ($this->isThreadClosed($response)) {
+
+			$this->sendThreadClosedDialog($response);
+			return;
+		}
+
 		$title = $response['thread']['title'];
 		$price = "Harga : " . $this->toRupiah($response['thread']['discounted_price']);
 		if ($response['thread']['discount'] > 0) {
@@ -194,4 +200,27 @@ class Lapak extends FJB {
 		return;
 	}
 
+	public function isThreadClosed($response) {
+
+		if ($response['thread']['open'] == 1) {
+
+			return false;
+		}
+		else {
+
+			return true;
+		}
+	}
+
+	public function sendThreadClosedDialog($response) {
+
+		$buttons = [
+			$this->session->createButton('back', 'Kembali Ke Pencarian'),
+			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
+		];
+		$title = 'Lapak Sudah Ditutup';
+		$caption = 'Silakan kembali ke pencarian atau menu utama';
+		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
+		$this->session->sendInteractiveMessage($interactive);
+	}
 }
