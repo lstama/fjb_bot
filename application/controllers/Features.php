@@ -4,10 +4,10 @@ include_once 'Request.php';
 
 class Features extends Request {
 
-	public $message_now;
-	public $session_now;
+	protected $message_now;
+	protected $session_now;
 
-	public function getPrefix($command) {
+	protected function getPrefix($command) {
 
 		$temp = explode('_', $command, 2);
 		if (isset($temp[0])) {
@@ -17,7 +17,7 @@ class Features extends Request {
 		return '';
 	}
 
-	public function getSuffix($command) {
+	protected function getSuffix($command) {
 
 		$temp = explode('_', $command, 2);
 		if (isset($temp[1])) {
@@ -27,7 +27,7 @@ class Features extends Request {
 		return '';
 	}
 
-	public function sendUnrecognizedCommandDialog() {
+	protected function sendUnrecognizedCommandDialog() {
 
 		$this->session->setLastSession('unrecognized_command');
 

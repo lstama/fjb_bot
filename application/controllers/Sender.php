@@ -6,13 +6,13 @@ include_once 'Bot_Account.php';
 
 class Sender extends Bot_Account {
 
-    private $client;
+    private $guzzle_client;
 	public $JID;
 
     public function __construct() {
 
     	parent::__construct();
-    	$this->client = new Client(['http_errors' => false]);
+    	$this->guzzle_client = new Client(['http_errors' => false]);
     }
 
 	public function sendInteractiveReply($message) {
@@ -79,13 +79,13 @@ class Sender extends Bot_Account {
 		$header["Authorization"] = $auth;
 		$option					 = ['verify' => false, 'headers' => $header, 'body' => $body];
 
-		$result 		 		 = $this->client->post($this->send_mass_api, $option);
+		$result 		 		 = $this->guzzle_client->post($this->send_mass_api, $option);
 		return $result;	
 	}
 
 	public function requestPost($url, $headers = null, $body = null) {
 
-		$result = $this->client->post($url, ['verify' => false, 'headers' => $headers, 'body' => $body]);
+		$result = $this->guzzle_client->post($url, ['verify' => false, 'headers' => $headers, 'body' => $body]);
 
 		return $result;
 		
@@ -93,7 +93,7 @@ class Sender extends Bot_Account {
 
 	public function requestGet($url, $headers =  null, $query = null) {
 
-    	$result = $this->client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);
+    	$result = $this->guzzle_client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);
     	
 		return $result;
 	}

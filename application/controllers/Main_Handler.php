@@ -5,8 +5,8 @@ include_once 'FJB_Bot.php';
 
 class Main_Handler {
 
-	public $user_account;
-	public $message;
+	private $user_account;
+	private $message;
 
 	public function handleReceivedMessage() {
 
@@ -29,7 +29,7 @@ class Main_Handler {
 
 				$bot = new FJB_Bot;
 				$bot->setMessageNow($session->message);
-				$bot->setSessionNow($session->last_session);
+				$bot->setSessionNow($session->getLastSession());
 				$bot->setSession($session);
 				$bot->main();
 			}
@@ -37,7 +37,7 @@ class Main_Handler {
 
 	}
 
-	public function isMessageLengthValid() {
+	private function isMessageLengthValid() {
 
 		if (strlen($this->message) <= 100) {
 
@@ -49,7 +49,7 @@ class Main_Handler {
 		}
 	}
 
-	public function createSession() {
+	private function createSession() {
 
 		$session = new Session();
 		$session->setUserAccount($this->user_account);

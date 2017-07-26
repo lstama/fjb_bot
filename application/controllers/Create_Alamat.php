@@ -28,7 +28,7 @@ class Create_Alamat extends FJB {
 		$this->session->sendReply('Silakan masukkan label alamat.');
 	}
 
-	public function sendAlamatFullDialog() {
+	private function sendAlamatFullDialog() {
 
 		$this->session->setLastSession('menu');
 
@@ -92,7 +92,7 @@ class Create_Alamat extends FJB {
 		}
 	}
 
-	public function createLabel() {
+	private function createLabel() {
 
 		$label = $this->session->message;
 		$data = ['label' => $label];
@@ -100,10 +100,10 @@ class Create_Alamat extends FJB {
 
 		$this->session->setLastSession('alamat_create_nama');
 
-		$this->session->sendReply('Silakan masukkan nama tujuan pengiriman.');
+		$this->session->sendReply('Silakan masukkan nama penerima kiriman.');
 	}
 
-	public function createNama() {
+	private function createNama() {
 
 		$nama = $this->session->message;
 		$data = ['nama' => $nama];
@@ -114,7 +114,7 @@ class Create_Alamat extends FJB {
 		$this->session->sendReply('Silakan masukkan nomor handphone tujuan pengiriman.');
 	}
 
-	public function createTelp() {
+	private function createTelp() {
 
 		$telp = $this->session->message;
 
@@ -125,7 +125,7 @@ class Create_Alamat extends FJB {
 			$caption	 = "Silakan masukkan nomor yang valid atau kembali ke menu utama.";
 			$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
-			$this->session->sendInteractiveReply($interactive);
+			$this->session->sendInteractiveMessage($interactive);
 			return;
 		}
 
@@ -136,7 +136,7 @@ class Create_Alamat extends FJB {
 		$this->sendProvinceList();
 	}
 
-	public function sendProvinceList() {
+	private function sendProvinceList() {
 
 		$response = $this->get('v1/fjb/location/provinces');
 		if (! $response->isSuccess()) return;
@@ -166,7 +166,7 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 	}
-	public function createProvinsi() {
+	private function createProvinsi() {
 
 		$provinsi = $this->session->message;
 
@@ -189,7 +189,7 @@ class Create_Alamat extends FJB {
 		$this->sendCityList($provinsi);
 	}
 
-	public function sendCityList($provinsi) {
+	private function sendCityList($provinsi) {
 		
 		$response = $this->get('v1/fjb/location/provinces/' . $provinsi . '/cities');
 		if (! $response->isSuccess()) return;
@@ -222,7 +222,7 @@ class Create_Alamat extends FJB {
 	}
 
 
-	public function createKota() {
+	private function createKota() {
 
 		$kota = $this->session->message;
 
@@ -249,7 +249,7 @@ class Create_Alamat extends FJB {
 		$this->sendAreaList($kota);
 	}
 
-	public function isCityNotExist($province, $city) {
+	private function isCityNotExist($province, $city) {
 
 		$response = $this->get('v1/fjb/location/provinces/' . $province . '/cities');
 		if (! $response->isSuccess()) return true;
@@ -264,7 +264,7 @@ class Create_Alamat extends FJB {
 		return $not_exist;
 	}
 
-	public function sendAreaList($kota) {
+	private function sendAreaList($kota) {
 
 		$response = $this->get('v1/fjb/location/cities/' . $kota . '/areas');
 		if (! $response->isSuccess()) return;
@@ -295,7 +295,7 @@ class Create_Alamat extends FJB {
 		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 	}
 
-	public function createKecamatan() {
+	private function createKecamatan() {
 
 		$kecamatan = $this->session->message;
 
@@ -321,7 +321,7 @@ class Create_Alamat extends FJB {
 		$this->session->sendReply('Silakan masukkan alamat tujuan (jalan, desa, kelurahan, dsb).');
 	}
 
-	public function isAreaNotExist($city, $area) {
+	private function isAreaNotExist($city, $area) {
 
 		$response = $this->get('v1/fjb/location/cities/' . $city . '/areas');
 		if (! $response->isSuccess()) return true;
@@ -336,7 +336,7 @@ class Create_Alamat extends FJB {
 		return $not_exist;
 	}
 
-	public function createAlamat() {
+	private function createAlamat() {
 
 		$alamat = $this->session->message;
 		$data = ['alamat' => $alamat];
@@ -346,7 +346,7 @@ class Create_Alamat extends FJB {
 		$this->sendCreateConfirmation();
 	}
 
-	public function sendCreateConfirmation() {
+	private function sendCreateConfirmation() {
 
 		$temp = $this->session->create_alamat_model->find_create_alamat($this->session->username);
 
@@ -362,8 +362,7 @@ class Create_Alamat extends FJB {
 		if (! $provinsi->isSuccess()) return;
 		$provinsi = $provinsi->getContent();
 
-		$text = "Konfirmasi" .
-			"\nLabel Alamat : " . $temp['label'] .
+		$text = "Label Alamat : " . $temp['label'] .
 			"\nNama : " . $temp['nama'] .
 			"\nNomor Handphone : " . $temp['telp'] .
 			"\nProvinsi : " . $provinsi .
@@ -384,7 +383,7 @@ class Create_Alamat extends FJB {
 		$this->session->sendInteractiveMessage($interactive);
 	}
 
-	public function createConfirmation() {
+	private function createConfirmation() {
 
 		$confirmation = $this->session->message;
 		if ($confirmation != 'ya') {

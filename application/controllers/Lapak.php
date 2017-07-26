@@ -36,7 +36,7 @@ class Lapak extends FJB {
 
 			case 'search':
 
-				$this->search($session_suffix);
+				$this->sendSearchResult($session_suffix);
 				break;
 
 			case 'list':
@@ -50,19 +50,25 @@ class Lapak extends FJB {
 		}
 	}
 
-	public function sendSearchInstruction() {
+	private function sendSearchInstruction() {
 
 		$this->session->setLastSession('lapak_search_1');
 		$this->session->sendReply('Silakan masukkan barang yang ingin dibeli.');
 
 	}
 
-	public function search($page) {
+	private function sendSearchResult($page) {
 
 		$search_query = $this->session->message;
 		$this->session->setLastSession('lapak_list_' . $page . "_" . $search_query);
-
-		$response = $this->get('search/lapak', ['query' => ['q' => $search_query, 'page' => $page]]);
+		$query = [
+			'query' => [
+				'q' => $search_query,
+				'page' => $page,
+				'limit' => 10
+			]
+		];
+		$response = $this->get('search/lapak', $query);
 		if (! $response->isSuccess()) return;
 		$response = $response->getContent();
 
@@ -117,7 +123,7 @@ class Lapak extends FJB {
 		return;
 	}
 
-	public function searchNext($last_session) {
+	private function searchNext($last_session) {
 
 		$page 	= $this->getPrefix($last_session);
 		$barang = $this->getSuffix($last_session);
@@ -136,10 +142,10 @@ class Lapak extends FJB {
 		}
 
 		$this->session->message = $barang;
-		$this->search($page);
+		$this->sendSearchResult($page);
 	}
 
-	public function showDetails($thread_id) {
+	private function showDetails($thread_id) {
 
 		$response = $this->get('v1/post/' . $thread_id);
 		if (! $response->isSuccess()) return;
@@ -200,7 +206,7 @@ class Lapak extends FJB {
 		return;
 	}
 
-	public function isThreadClosed($response) {
+	private function isThreadClosed($response) {
 
 		if ($response['thread']['open'] == 1) {
 
@@ -212,7 +218,7 @@ class Lapak extends FJB {
 		}
 	}
 
-	public function sendThreadClosedDialog() {
+	private function sendThreadClosedDialog() {
 
 		$buttons = [
 			$this->session->createButton('back', 'Kembali Ke Pencarian'),

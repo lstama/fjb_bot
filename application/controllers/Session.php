@@ -11,10 +11,11 @@ class Session extends Sender {
 
 	/** @var \Kaskus\KaskusClient $kaskus_client */
 	public $kaskus_client;
-	public $last_session;
-	public $session_from_database;
-	public $request_token;
-	public $access_token;
+	private $last_session;
+
+	private $session_from_database;
+	private $request_token;
+	private $access_token;
 
 	public function __construct() {
 
@@ -23,7 +24,7 @@ class Session extends Sender {
 		$this->initiateKaskusClient();
 	}
 
-	public function initiateKaskusClient(){
+	private function initiateKaskusClient(){
 
 		$this->kaskus_client = new \Kaskus\KaskusClient($this->consumer_key, $this->consumer_secret, $this->kaskus_api);
 		#TODO : Delete this when in production.
@@ -53,7 +54,7 @@ class Session extends Sender {
 		}
 	}
 
-	public function startSession($error_on_authorization = FALSE) {
+	private function startSession($error_on_authorization = FALSE) {
 
 		if ($error_on_authorization) {
 
@@ -65,7 +66,7 @@ class Session extends Sender {
 		$this->sendAuthorizeUrl($error_on_authorization);
 	}
 
-	public function createSessionInDatabase() {
+	private function createSessionInDatabase() {
 
 		$this->getRequestToken();
 
@@ -81,12 +82,12 @@ class Session extends Sender {
 		$this->session_from_database = $this->session_model->find_session($this->username);
 	}
 
-	public function getRequestToken() {
+	private function getRequestToken() {
 
 		$this->request_token = $this->kaskus_client->getRequestToken($this->callback_url);
 	}
 
-	public function sendAuthorizeUrl($error_on_authorization = FALSE) {
+	private function sendAuthorizeUrl($error_on_authorization = FALSE) {
 
 		$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
 
@@ -106,7 +107,7 @@ class Session extends Sender {
 	}
 
 	#Call API to check user status;
-	public function isAuthorized() {
+	private function isAuthorized() {
 
 		try {
 
@@ -156,7 +157,7 @@ class Session extends Sender {
 		}
 	}
 
-	public function authorizationSuccess() {
+	private function authorizationSuccess() {
 
 		$this->status = 'logged_on';
 		$this->last_session = 'logged_on';
@@ -176,7 +177,7 @@ class Session extends Sender {
 		echo "Authorisasi berhasil. Silakan kembali ke apps untuk mulai melanjutkan.";
 	}
 
-	public function differentAccountAuthorization() {
+	private function differentAccountAuthorization() {
 
 		$this->renewAuthorization();
 		echo "Authorisasi gagal, akun Kaskus Chat dan akun authorisasi berbeda. 
@@ -184,13 +185,13 @@ class Session extends Sender {
 					Kami telah mengirimkan link authorisasi yang baru, silakan buka Kaskus Chat lagi.";
 	}
 
-	public function authorizationFailed() {
+	private function authorizationFailed() {
 
 		$this->renewAuthorization();
 		echo "Authorisasi gagal. Silakan kembali ke apps untuk mendapatkan link authorisasi yang baru.";
 	}
 
-	public function renewAuthorization() {
+	private function renewAuthorization() {
 
 		$this->status 		= 'trying_to_login';
 		$this->last_session = 'trying_to_login';
@@ -200,7 +201,7 @@ class Session extends Sender {
 		$this->startSession(TRUE);
 	}
 
-	public function redirectToMenuUtama() {
+	private function redirectToMenuUtama() {
 
 		$this->setLastSession('menu');
 
@@ -217,6 +218,10 @@ class Session extends Sender {
 		$this->last_session = $last_session;
 		$data = ['last_session'   => $this->last_session];
 		$this->session_model->update_session($this->session_from_database['username'], $data);
+	}
+
+	public function getLastSession() {
+		return $this->last_session;
 	}
 
 	public function setUserAccount($user_account) {

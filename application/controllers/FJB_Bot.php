@@ -92,7 +92,7 @@ class FJB_Bot extends Features {
 		}
 	}
 
-	public function sendMenuDialog() {
+	private function sendMenuDialog() {
 
 		$this->session->setLastSession('menu');
 

@@ -2,15 +2,15 @@
 
 class Bot_Account extends CI_Controller {
 
-    public $bot_username;
-    public $bot_password;
-    public $bot_id;
-    public $hook_secret;
-    public $consumer_key;
-    public $consumer_secret;
-    public $callback_url;
-	public $send_mass_api;
-	public $kaskus_api;
+    protected $bot_username;
+    protected $bot_password;
+    protected $bot_id;
+    protected $hook_secret;
+    protected $consumer_key;
+    protected $consumer_secret;
+    protected $callback_url;
+	protected $send_mass_api;
+	protected $kaskus_api;
 
     public function __construct() {
 

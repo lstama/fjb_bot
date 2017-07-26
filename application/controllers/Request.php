@@ -7,9 +7,9 @@ include_once 'Request_Result.php';
 class Request {
 
 	/** @var Session $session */
-	public $session;
+	protected $session;
 
-	public function get($url, $query = null) {
+	protected function get($url, $query = null) {
 
 		try {
 
@@ -34,7 +34,7 @@ class Request {
 
 	}
 
-	public function post($url, $parameter) {
+	protected function post($url, $parameter) {
 
 		try {
 
@@ -51,7 +51,7 @@ class Request {
 		}
 	}
 
-	public function delete($url, $parameter = null) {
+	protected function delete($url, $parameter = null) {
 
 		try {
 
@@ -68,7 +68,7 @@ class Request {
 		}
 	}
 
-	public function createSuccessResult($response) {
+	private function createSuccessResult($response) {
 
 		/** @var \GuzzleHttp\Message\Response $response */
 		$result = new Request_Result;
@@ -77,7 +77,7 @@ class Request {
 		return $result;
 	}
 
-	public function createRequestExceptionResult($exception) {
+	private function createRequestExceptionResult($exception) {
 
 		/** @var \Kaskus\Exceptions\KaskusRequestException $exception */
 		$response = $exception->getMessage();
@@ -90,7 +90,7 @@ class Request {
 	}
 
 
-	public function sendErrorOccuredDialog($response = null) {
+	protected function sendErrorOccuredDialog($response = null) {
 
 		$this->session->setLastSession('error_occured');
 
