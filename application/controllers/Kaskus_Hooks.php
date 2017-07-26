@@ -45,8 +45,8 @@ class Kaskus_Hooks extends CI_Controller {
 
 		if ($request_signature == $bot_signature) {
 
-			$user_account = $this->getUserAccount();
-			$message = $this->getMessage();
+			$user_account 	= $this->getUserAccount();
+			$message 		= $this->getMessage();
 
 			$this->handler->setUserAccount($user_account);
 			$this->handler->setMessage($message);

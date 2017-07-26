@@ -279,6 +279,7 @@ class Alamat extends FJB {
 		}
 
 		$result = $this->delete('v1/fjb/location/addresses/' . $id);
+		if (! $result->isSuccess()) return;
 
 		$buttons 	 = [
 			$this->session->createButton('/alamat_daftar', 'Kembali ke Daftar Alamat'),
@@ -289,50 +290,5 @@ class Alamat extends FJB {
 
 		$this->session->sendInteractiveReply($interactive);
 	}
-
-//	public function main($command) {
-//
-//		$command = explode('_', $command, 2);
-//
-//		switch ($command[0]) {
-//		    case 'daftar':
-//		        $this->daftarAlamat();
-//		        break;
-//		    case 'lihat':
-//		        $this->lihatAlamat($command[1]);
-//		        break;
-//		    case 'create':
-//		    	$create = new Create_Alamat($this->session);
-//		        $create->startCreate();
-//		        break;
-//		    case 'hapus':
-//		    	$this->sendDeleteConfirmation($command[1]);
-//		        break;
-//		    case 'default':
-//		    	$this->setToDefault($command[1]);
-//		        break;
-//
-//		    default:
-//		        $this->unrecognizedCommand();
-//		}
-//
-//	}
-//
-//	public function lastSessionSpecific($last_session) {
-//
-//		$last_session = explode('_', $last_session, 2);
-//		switch ($last_session[0]) {
-//		    case 'create':
-//		        $create = new Create_Alamat($this->session);
-//		        $create->createCreateSession($last_session[1]);
-//		        break;
-//
-//		    case 'delete':
-//		        $this->deleteAlamat($last_session[1]);
-//		        break;
-//		    default:
-//		        $this->unrecognizedCommand();
-//		}
-//	}
 
 }

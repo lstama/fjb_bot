@@ -15,7 +15,12 @@ class Main_Handler {
 			#Default
 			if ($this->message == 'halo') {
 
-				echo 'Halo juga!';
+				http_response_code(200);
+				header('Content-Type: application/json');
+				$data = ["body" => 'halo juga!'];
+				$data = json_encode($data);
+
+				echo $data;
 				return;
 			}
 

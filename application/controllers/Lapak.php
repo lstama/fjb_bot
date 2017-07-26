@@ -147,7 +147,7 @@ class Lapak extends FJB {
 
 		if ($this->isThreadClosed($response)) {
 
-			$this->sendThreadClosedDialog($response);
+			$this->sendThreadClosedDialog();
 			return;
 		}
 
@@ -212,7 +212,7 @@ class Lapak extends FJB {
 		}
 	}
 
-	public function sendThreadClosedDialog($response) {
+	public function sendThreadClosedDialog() {
 
 		$buttons = [
 			$this->session->createButton('back', 'Kembali Ke Pencarian'),
