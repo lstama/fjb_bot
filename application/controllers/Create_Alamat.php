@@ -405,6 +405,7 @@ class Create_Alamat extends FJB {
 		];
 
 		$result = $this->post('v1/fjb/location/addresses', $parameter);
+		if (! $result->isSuccess()) return;
 
 		$this->session->setLastSession('alamat_daftar');
 		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];

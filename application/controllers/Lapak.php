@@ -193,9 +193,10 @@ class Lapak extends FJB {
 
 		#send info lengkap
 		$this->session->sendMessage($response['posts'][0]['post'][0]['text']);
-
+		$post_id = $response['thread']['thread_id'];
 		$buttons = [
-			$this->session->createButton('/buy_start_' . $response['thread']['thread_id'], 'Beli'),
+			$this->session->createButton('/buy_start_' . $post_id, 'Beli'),
+			$this->session->createButton('/keranjang_tambah_' . $post_id, 'Tambah ke Keranjang'),
 			$this->session->createButton('back', 'Kembali Ke Pencarian'),
 			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
 		];

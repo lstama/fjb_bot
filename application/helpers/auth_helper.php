@@ -1,58 +1,32 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-if ( ! function_exists('generateKaskusBotSignature'))
-{
-    function generateKaskusBotSignature($hookSecret, $httpBody, $httpDate) {
-    	
-    	$stringToEncode = $httpDate . $httpBody;
-    	$hashedString 	= base64_encode(hash_hmac('sha256', $stringToEncode, $hookSecret, true));
-    	
-        return $hashedString;
-
-	}   
+$data = [
+	'id' => (string)$item['_id'],
+	'item' => [
+		'id' => (string)$item['thread_id'],
+		'title' => (string)$item['thread_title'],
+		'image' => (string)$threadImage,
+		'discounted_price' => (int)discount_price((int)$item['item_price'], (int)$item['item_discount']),
+		'is_instant_purchase' => !empty($item['instant_purchase']) ? (boolean) $item['instant_purchase'] : false
+	],
+	'seller' => [
+		'id' => (string)$item['seller_id'],
+		'username' => (string)$item['seller_username'],
+		'avatar' => (string)$sellerProfpict,
+		'is_vsl' => $sellerDetail['is_vsl'],
+		'is_donatur' => $sellerDetail['is_donatur']
+	],
+	'quantity' => (int)$item['quantity'],
+	'type' => (int)$item['type']
+];
+if (!empty($item['offer_id'])) {
+	$data['offer'] = [
+		'id' => (string)$item['offer_id'],
+		'price' => (int)$item['offer_price']
+	];
+	$data['shipping'] = [
+		'cost' => (int)$item['shipping_cost'],
+		'insurance_cost' => (int)$item['insurance_cost']
+	];
 }
-
-if ( ! function_exists('basicAuthHeader'))
-{
-    function basicAuthHeader($username, $password) {
-    	
-    	$stringToEncode = $username . ':' . $password;
-    	$hashedString 	= base64_encode($stringToEncode);
-    	
-        return 'Basic ' . $hashedString;
-
-	}   
-}
-
-if ( ! function_exists('generateSHA1Signature'))
-{
-    function generateSHA1Signature($base_string, $key) {
-        
-        $result = base64_encode(hash_hmac('sha1', $base_string, $key, true));
-        
-        return $result;
-    }   
-}
-
-if ( ! function_exists('generateNonce'))
-{
-    function generateNonce($salt = 'jackylmao') {
-        
-        $base_string = time();
-        $result = base64_encode(hash_hmac('sha1', $base_string, $salt));
-        
-        return $result;
-    }   
-}
-
-if ( ! function_exists('basicAuth'))
-{
-    function basicAuth($username, $password) {
-        
-        $stringToEncode = $username . ':' . $password;
-        $hashedString   = base64_encode($stringToEncode);
-        
-        return 'Basic ' . $hashedString;
-
-    }   
 }

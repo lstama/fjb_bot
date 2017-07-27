@@ -74,7 +74,7 @@ class Alamat extends FJB {
 		}
 	}
 
-	public function sendDaftarAlamat() {
+	private function sendDaftarAlamat() {
 
 		$this->session->setLastSession('alamat_daftar');
 		$response = $this->get('v1/fjb/location/addresses');
@@ -104,7 +104,7 @@ class Alamat extends FJB {
 		}
 	}
 
-	public function createSearchAlamatInteractive($alamat) {
+	private function createSearchAlamatInteractive($alamat) {
 
 		$name = $alamat['name'];
 		$buttons = [
@@ -124,7 +124,7 @@ class Alamat extends FJB {
 		return $interactive;
 	}
 
-	public function createEmptyAlamatDialog() {
+	private function createEmptyAlamatDialog() {
 
 		$buttons = [
 			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
@@ -137,7 +137,7 @@ class Alamat extends FJB {
 		return $interactive;
 	}
 
-	public function sendAlamatDetails($id) {
+	private function sendAlamatDetails($id) {
 
 		$this->session->setLastSession('alamat_lihat');
 		$response = $this->get('v1/fjb/location/addresses');
@@ -193,7 +193,7 @@ class Alamat extends FJB {
 		return;
 	}
 
-	public function setToDefault($id) {
+	private function setToDefault($id) {
 
 		$parameter   = [
 						'default' => 'true'
@@ -214,7 +214,7 @@ class Alamat extends FJB {
 		$this->session->sendInteractiveReply($interactive);
 	}
 
-	public function sendDeleteConfirmation($id) {
+	private function sendDeleteConfirmation($id) {
 
 		$this->session->setLastSession('alamat_delete_confirmation');
 		$response = $this->get('v1/fjb/location/addresses');
@@ -269,7 +269,7 @@ class Alamat extends FJB {
 		$this->session->setLastSession('alamat_delete_' . $id);
 	}
 
-	public function deleteAlamat($id) {
+	private function deleteAlamat($id) {
 
 		$confirmation = $this->session->message;
 		if ($confirmation != 'ya') {
