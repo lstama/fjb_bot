@@ -13,53 +13,90 @@ class FJB extends Features {
 		$this->fjb_old = new FJB_Old;
 	}
 
-	public function getProvinceNameFromOldKaskus($id) {
+	protected function getProvinceNameFromOldKaskus($id) {
 
 		return $this->fjb_old->location[$id];
 	}
 
-	public function getItemConditionName($id) {
+	protected function getItemConditionName($id) {
 
 		return $this->fjb_old->condition[$id];
 	}
 
-	public function getProvinceName($id) {
+	protected function getProvinceName($id) {
 
 		$response = $this->get('v1/fjb/location/provinces/' . $id);
-		if (! $response->isSuccess()) {
+		if (!$response->isSuccess()) {
 
 			return $response;
 		}
 
-		return new Request_Result($response->getSuccess(),$response->content['name']);
+		return new Request_Result($response->getSuccess(), $response->content['name']);
 	}
 
-	public function getCityName($id) {
+	protected function getCityName($id) {
 
 		$response = $this->get('v1/fjb/location/cities/' . $id);
-		if (! $response->isSuccess()) {
+		if (!$response->isSuccess()) {
 
 			return $response;
 		}
 
-		return new Request_Result($response->getSuccess(),$response->content['name']);
+		return new Request_Result($response->getSuccess(), $response->content['name']);
 	}
 
-	public function getAreaName($id) {
+	protected function getAreaName($id) {
 
 		$response = $this->get('v1/fjb/location/areas/' . $id);
-		if (! $response->isSuccess()) {
+		if (!$response->isSuccess()) {
 
 			return $response;
 		}
 
-		return new Request_Result($response->getSuccess(),$response->content['name']);
+		return new Request_Result($response->getSuccess(), $response->content['name']);
 	}
 
-	public function toRupiah($number) {
+	protected function toRupiah($number) {
 
 		$money_number = 'Rp ';
-		$money_number .= number_format($number,2,',','.');
+		$money_number .= number_format($number, 2, ',', '.');
 		return $money_number;
 	}
+
+	protected function isThreadClosed($response) {
+
+		if ($response['thread']['open'] == 1) {
+
+			return false;
+		} else {
+
+			return true;
+		}
+	}
+
+	protected function sendThreadClosedDialog() {
+
+		$buttons = [
+			$this->session->createButton('back', 'Kembali Ke Pencarian'),
+			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
+		];
+		$title = 'Lapak Sudah Ditutup';
+		$caption = 'Silakan kembali ke pencarian atau menu utama';
+		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
+		$this->session->sendInteractiveMessage($interactive);
+	}
+
+	protected function sendEmptyAlamatDialog() {
+
+		$this->session->setLastSession('alamat_empty');
+		$buttons = [
+			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
+			$this->session->createButton('/menu', 'Kembali ke Menu Utama.')
+		];
+
+		$caption = "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.";
+		$interactive = $this->session->createInteractive(null, null, $caption, $buttons);
+		$this->session->sendInteractiveMessage($interactive);
+	}
+
 }

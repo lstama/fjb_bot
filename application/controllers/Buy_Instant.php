@@ -1,8 +1,8 @@
 <?php
 
-include_once 'FJB.php';
+include_once 'Buy.php';
 
-class Buy_Instant extends FJB {
+class Buy_Instant extends Buy {
 
 	public function instantBuy() {
 
@@ -33,24 +33,10 @@ class Buy_Instant extends FJB {
 		}
 	}
 
-	public function sendQuantity() {
-
-		$this->session->sendMessage('Silakan masukkan jumlah barang yang akan dibeli. (1 - 99)');
-	}
-
 	public function selectQuantity() {
 
-		$jumlah = $this->session->message;
-
-		if ((! is_numeric($jumlah)) or ($jumlah < 1) or ($jumlah > 99)) {
-
-			$this->session->sendMessage('Jumlah tidak valid.');
-			$this->sendQuantity();
-			return;
-		}
-
-		$quantity = ['quantity' => $jumlah];
-		$this->session->buy_model->update_buy($this->session->username, $quantity);
+		$result = $this->checkQuantity();
+		if ($result == 'failed') return;
 
 		$this->session->setLastSession('buy_instant_confirmation');
 		$this->sendInstantConfirmation();
@@ -85,28 +71,6 @@ class Buy_Instant extends FJB {
 		return;
 	}
 
-	public function getBarang($thread_id) {
-
-		$response = $this->get('v1/lapak/' . $thread_id, []);
-		if (! $response->isSuccess()) return $response;
-		$response = $response->getContent();
-
-		return $response;
-	}
-
-	public function displayBarang($barang) {
-
-		$title = $barang['thread']['title'];
-		$price = "Harga : " . $this->toRupiah($barang['thread']['discounted_price']);
-		if ($barang['thread']['discount'] > 0) {
-
-			$price .= "\nHarga sebelum diskon : " . $this->toRupiah($barang['thread']['item_price']);
-		}
-		$image_thumbnail = $barang['thread']['resources']['thumbnail'];
-		$interactive = $this->session->createInteractive($image_thumbnail, $title, $price);
-		$this->session->sendInteractiveMessage($interactive);
-	}
-
 	public function selectConfirmation() {
 
 		if ($this->session->message == 'ya') {
@@ -119,20 +83,10 @@ class Buy_Instant extends FJB {
 			];
 
 			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/buy_now', $parameter);
-			if (! $response->isSuccess()) return;
+			if (!$response->isSuccess()) return;
 			$response = $response->getContent();
 
-			$this->session->setLastSession('buy_checkout_' . $buy['thread_id']);
-
-			$buttons = [
-				$this->session->createButton($response['checkout_url'], 'Lanjut ke Pembayaran'),
-				$this->session->createButton('/menu', 'Kembali ke Menu Utama')
-			];
-			$title = "Pemesanan Berhasil";
-			$caption = 'Silakan klik tombol di bawah ini untuk lanjut ke pembayaran';
-			$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
-
-			$this->session->sendInteractiveReply($interactive);
+			$this->sendCheckoutUrl($response, $buy);
 		}
 	}
 

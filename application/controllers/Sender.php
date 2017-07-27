@@ -1,19 +1,21 @@
 <?php
 
 require 'vendor/autoload.php';
+
 use GuzzleHttp\Client;
+
 include_once 'Bot_Account.php';
 
 class Sender extends Bot_Account {
 
-    private $guzzle_client;
+	private $guzzle_client;
 	public $JID;
 
-    public function __construct() {
+	public function __construct() {
 
-    	parent::__construct();
-    	$this->guzzle_client = new Client(['http_errors' => false]);
-    }
+		parent::__construct();
+		$this->guzzle_client = new Client(['http_errors' => false]);
+	}
 
 	public function sendInteractiveReply($message) {
 
@@ -51,36 +53,36 @@ class Sender extends Bot_Account {
 
 	public function sendMessage($message) {
 
-		$auth					 = $this->basicAuthHeader();
+		$auth = $this->basicAuthHeader();
 
-		$content_type  			 = "application/json";
+		$content_type = "application/json";
 
-		$body['id'] 	 		 = $this->bot_id;
-		$recipients['body'] 	 = $message;
+		$body['id'] = $this->bot_id;
+		$recipients['body'] = $message;
 		$recipients['recipient'] = $this->JID;
-		$body['sendList']		 = [$recipients];
+		$body['sendList'] = [$recipients];
 
-		$body 					 = json_encode($body);
+		$body = json_encode($body);
 
 		$this->sendToChatApi($auth, $content_type, $body);
 	}
 
 	public function basicAuthHeader() {
 
-		$string_to_encode	= $this->bot_username . ':' . $this->bot_password;
-		$hashed_string		= base64_encode($string_to_encode);
+		$string_to_encode = $this->bot_username . ':' . $this->bot_password;
+		$hashed_string = base64_encode($string_to_encode);
 
 		return 'Basic ' . $hashed_string;
 	}
 
 	public function sendToChatApi($auth, $content_type, $body) {
 
-		$header["Content-Type"]  = $content_type;
+		$header["Content-Type"] = $content_type;
 		$header["Authorization"] = $auth;
-		$option					 = ['verify' => false, 'headers' => $header, 'body' => $body];
+		$option = ['verify' => false, 'headers' => $header, 'body' => $body];
 
-		$result 		 		 = $this->guzzle_client->post($this->send_mass_api, $option);
-		return $result;	
+		$result = $this->guzzle_client->post($this->send_mass_api, $option);
+		return $result;
 	}
 
 	public function requestPost($url, $headers = null, $body = null) {
@@ -88,35 +90,35 @@ class Sender extends Bot_Account {
 		$result = $this->guzzle_client->post($url, ['verify' => false, 'headers' => $headers, 'body' => $body]);
 
 		return $result;
-		
-	}      
 
-	public function requestGet($url, $headers =  null, $query = null) {
+	}
 
-    	$result = $this->guzzle_client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);
-    	
+	public function requestGet($url, $headers = null, $query = null) {
+
+		$result = $this->guzzle_client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);
+
 		return $result;
 	}
 
 	public function createButton($reply, $label, $show = 'all') {
 
-    	$b['reply'] = $reply;
-    	$b['text']  = $label;
-    	$b['show']	= $show;
-    	$b['client']= 'OTHER';
+		$b['reply'] = $reply;
+		$b['text'] = $label;
+		$b['show'] = $show;
+		$b['client'] = 'OTHER';
 
-    	return $b;
+		return $b;
 	}
 
 	public function createInteractive($image = null, $title = null, $caption = null, $buttons = null, $placeholder = null) {
 
-    	if ($image != null)       $i['image']          = $image;
-    	if ($title != null)       $i['title']          = $title;
-    	if ($caption != null)     $i['caption']        = $caption;
-    	if ($buttons != null)     $i['buttons']        = $buttons;
-    	if ($placeholder != null) $i['placeholder']    = $placeholder;
+		if ($image != null) $i['image'] = $image;
+		if ($title != null) $i['title'] = $title;
+		if ($caption != null) $i['caption'] = $caption;
+		if ($buttons != null) $i['buttons'] = $buttons;
+		if ($placeholder != null) $i['placeholder'] = $placeholder;
 
-    	return $i;
+		return $i;
 	}
 
 	public function setJID($JID) {

@@ -31,9 +31,9 @@ class Features extends Request {
 
 		$this->session->setLastSession('unrecognized_command');
 
-		$buttons 	 = array($this->session->createButton('/menu', 'Kembali ke Menu Utama'));
-		$title 		 = "Perintah Tidak Dikenal";
-		$caption	 = "Silakan masukkan perintah yang benar atau kembali ke menu utama.";
+		$buttons = array($this->session->createButton('/menu', 'Kembali ke Menu Utama'));
+		$title = "Perintah Tidak Dikenal";
+		$caption = "Silakan masukkan perintah yang benar atau kembali ke menu utama.";
 		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
 		$this->session->sendInteractiveMessage($interactive);

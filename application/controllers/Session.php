@@ -24,7 +24,7 @@ class Session extends Sender {
 		$this->initiateKaskusClient();
 	}
 
-	private function initiateKaskusClient(){
+	private function initiateKaskusClient() {
 
 		$this->kaskus_client = new \Kaskus\KaskusClient($this->consumer_key, $this->consumer_secret, $this->kaskus_api);
 		#TODO : Delete this when in production.
@@ -46,8 +46,7 @@ class Session extends Sender {
 			$this->status = 'logged_on';
 			$this->last_session = $this->session_from_database['last_session'];
 			return true;
-		}
-		else {
+		} else {
 
 			$this->sendAuthorizeUrl();
 			return false;
@@ -71,11 +70,11 @@ class Session extends Sender {
 		$this->getRequestToken();
 
 		$data = [
-			'username'       => $this->username,
-			'JID'       	 => $this->JID,
-			'token'          => $this->request_token['oauth_token'],
-			'token_secret'   => $this->request_token['oauth_token_secret'],
-			'last_session'   => 'trying_to_login'
+			'username' => $this->username,
+			'JID' => $this->JID,
+			'token' => $this->request_token['oauth_token'],
+			'token_secret' => $this->request_token['oauth_token_secret'],
+			'last_session' => 'trying_to_login'
 		];
 
 		$this->session_model->create_session($data);
@@ -92,10 +91,10 @@ class Session extends Sender {
 		$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
 
 		$authorize_url = $this->kaskus_client->getAuthorizeUrl($this->session_from_database['token']);
-		$buttons 	   = [$this->createButton($authorize_url, 'Authorize')];
-		$title		   = "Anda belum login";
-		$caption 	   = "Klik tombol di bawah untuk authorize FJB Bot.";
-		$interactive   = $this->createInteractive(null, $title, $caption, $buttons, null);
+		$buttons = [$this->createButton($authorize_url, 'Authorize')];
+		$title = "Anda belum login";
+		$caption = "Klik tombol di bawah untuk authorize FJB Bot.";
+		$interactive = $this->createInteractive(null, $title, $caption, $buttons, null);
 
 		if ($error_on_authorization) {
 
@@ -114,12 +113,10 @@ class Session extends Sender {
 			$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
 			$response = $this->kaskus_client->get('user');
 			return true;
-		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+		} catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
 
 			return false;
-		}
-		catch (\Exception $exception) {
+		} catch (\Exception $exception) {
 
 			return false;
 		}
@@ -193,7 +190,7 @@ class Session extends Sender {
 
 	private function renewAuthorization() {
 
-		$this->status 		= 'trying_to_login';
+		$this->status = 'trying_to_login';
 		$this->last_session = 'trying_to_login';
 
 		$this->session_model->delete_session($this->session_from_database['username']);
@@ -206,7 +203,7 @@ class Session extends Sender {
 		$this->setLastSession('menu');
 
 		$buttons = [$this->createButton('/menu', 'Menu Utama')];
-		$title	 = 'Login Berhasil';
+		$title = 'Login Berhasil';
 		$caption = "Silakan klik tombol di bawah ini untuk melanjutkan.";
 		$interactive = $this->createInteractive(null, $title, $caption, $buttons);
 
@@ -216,7 +213,7 @@ class Session extends Sender {
 	public function setLastSession($last_session) {
 
 		$this->last_session = $last_session;
-		$data = ['last_session'   => $this->last_session];
+		$data = ['last_session' => $this->last_session];
 		$this->session_model->update_session($this->session_from_database['username'], $data);
 	}
 
@@ -226,7 +223,7 @@ class Session extends Sender {
 
 	public function setUserAccount($user_account) {
 
-		$this->username	= $user_account->username;
+		$this->username = $user_account->username;
 		$this->setJID($user_account->JID);
 	}
 

@@ -42,8 +42,7 @@ class Main_Handler {
 		if (strlen($this->message) <= 100) {
 
 			return true;
-		}
-		else {
+		} else {
 
 			return false;
 		}

@@ -22,12 +22,10 @@ class Request {
 			}
 
 			return $this->createSuccessResult($response);
-		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+		} catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
 
 			return $this->createRequestExceptionResult($exception);
-		}
-		catch (\Exception $exception) {
+		} catch (\Exception $exception) {
 
 			return $this->createRequestExceptionResult($exception);
 		}
@@ -38,14 +36,12 @@ class Request {
 
 		try {
 
-			$response = $this->session->kaskus_client->post($url,['body' => $parameter]);
+			$response = $this->session->kaskus_client->post($url, ['body' => $parameter]);
 			return $this->createSuccessResult($response);
-		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+		} catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
 
 			return $this->createRequestExceptionResult($exception);
-		}
-		catch (\Exception $exception) {
+		} catch (\Exception $exception) {
 
 			return $this->createRequestExceptionResult($exception);
 		}
@@ -55,14 +51,12 @@ class Request {
 
 		try {
 
-			$response = $this->session->kaskus_client->delete($url,['body' => $parameter]);
+			$response = $this->session->kaskus_client->delete($url, ['body' => $parameter]);
 			return $this->createSuccessResult($response);
-		}
-		catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
+		} catch (\Kaskus\Exceptions\KaskusRequestException $exception) {
 
 			return $this->createRequestExceptionResult($exception);
-		}
-		catch (\Exception $exception) {
+		} catch (\Exception $exception) {
 
 			return $this->createRequestExceptionResult($exception);
 		}

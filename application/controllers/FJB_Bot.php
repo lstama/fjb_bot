@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 include_once 'Features.php';
 include_once 'Alamat.php';
 include_once 'Lapak.php';
-include_once 'Buy.php';
+include_once 'Buy_Start.php';
 include_once 'Keranjang.php';
 
 class FJB_Bot extends Features {
@@ -40,7 +40,7 @@ class FJB_Bot extends Features {
 
 			case '/buy':
 
-				$buy = new Buy;
+				$buy = new Buy_Start;
 				$buy->setMessageNow($message_suffix);
 				$buy->setSessionNow($this->session_now);
 				$buy->setSession($this->session);
@@ -56,9 +56,9 @@ class FJB_Bot extends Features {
 				$keranjang->main();
 				break;
 
-		    default:
+			default:
 
-		    	$this->lastSessionSpecific();
+				$this->lastSessionSpecific();
 		}
 	}
 
@@ -87,9 +87,9 @@ class FJB_Bot extends Features {
 				$lapak->lastSessionSpecific();
 				break;
 
-			case 'buy':
+			case 'Buy_Start':
 
-				$buy = new Buy;
+				$buy = new Buy_Start;
 				$buy->setMessageNow($this->message_now);
 				$buy->setSessionNow($session_suffix);
 				$buy->setSession($this->session);
@@ -105,9 +105,9 @@ class FJB_Bot extends Features {
 				$keranjang->lastSessionSpecific();
 				break;
 
-		    default:
+			default:
 
-		    	$this->sendUnrecognizedCommandDialog();
+				$this->sendUnrecognizedCommandDialog();
 		}
 	}
 
@@ -120,9 +120,9 @@ class FJB_Bot extends Features {
 			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
 			$this->session->createButton('/keranjang_daftar', 'Keranjang'),
 			$this->session->createButton('/lapak_start', 'Cari Barang')
-			];
-		$title	 	 = "Menu Utama";
-		$caption 	 = "Silakan pilih menu di bawah untuk melanjutkan.";
+		];
+		$title = "Menu Utama";
+		$caption = "Silakan pilih menu di bawah untuk melanjutkan.";
 		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
 		$this->session->sendInteractiveMessage($interactive);

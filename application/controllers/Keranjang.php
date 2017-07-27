@@ -35,7 +35,7 @@ class Keranjang extends FJB {
 	public function lastSessionSpecific() {
 
 		$session_prefix = $this->getPrefix($this->session_now);
-		$session_suffix = $this->getSuffix($this->session_now);
+//		$session_suffix = $this->getSuffix($this->session_now);
 
 		switch ($session_prefix) {
 
@@ -56,7 +56,7 @@ class Keranjang extends FJB {
 			]
 		];
 		$response = $this->get('v1/fjb/checkout_items/', $query);
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$total_barang = 0; #maximum counter = 10
@@ -76,8 +76,7 @@ class Keranjang extends FJB {
 			$interactive = $this->createEmptyKeranjangDialog();
 			$this->session->sendInteractiveMessage($interactive);
 			return;
-		}
-		else {
+		} else {
 
 			$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 		}
@@ -112,7 +111,7 @@ class Keranjang extends FJB {
 
 		$buttons = [
 			$this->session->createButton('/lapak_start', 'Cari Barang'),
-			$this->session->createButton('/menu', 'Kembali ke Menu Utama.')
+			$this->session->createButton('/menu', 'Kembali ke Menu Utama')
 		];
 
 		$caption = "Keranjang masih kosong.";
@@ -124,13 +123,13 @@ class Keranjang extends FJB {
 	private function deleteBarangKeranjang($id) {
 
 		$result = $this->delete('v1/fjb/checkout_items/' . $id);
-		if (! $result->isSuccess()) return;
+		if (!$result->isSuccess()) return;
 
-		$buttons 	 = [
+		$buttons = [
 			$this->session->createButton('/keranjang_daftar', 'Kembali ke Keranjang'),
 			$this->session->createButton('/menu', 'Kembali ke Menu Utama')
 		];
-		$title 		 ="Barang Berhasil Dihapus dari Keranjang";
+		$title = "Barang Berhasil Dihapus dari Keranjang";
 		$interactive = $this->session->createInteractive(null, $title, null, $buttons);
 
 		$this->session->sendInteractiveReply($interactive);
@@ -139,7 +138,7 @@ class Keranjang extends FJB {
 	private function tambahBarangKeranjang($thread_id) {
 
 		$response = $this->get('v1/lapak/' . $thread_id, []);
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		if ($this->isThreadClosed($response)) {
@@ -154,7 +153,7 @@ class Keranjang extends FJB {
 		];
 
 		$result = $this->post('v1/fjb/checkout_items', $parameter);
-		if (! $result->isSuccess()) return;
+		if (!$result->isSuccess()) return;
 
 		$this->session->setLastSession('keranjang_tambah');
 		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
@@ -164,27 +163,5 @@ class Keranjang extends FJB {
 		$this->session->sendInteractiveMessage($interactive);
 	}
 
-	private function isThreadClosed($response) {
 
-		if ($response['thread']['open'] == 1) {
-
-			return false;
-		}
-		else {
-
-			return true;
-		}
-	}
-
-	private function sendThreadClosedDialog() {
-
-		$buttons = [
-			$this->session->createButton('back', 'Kembali Ke Pencarian'),
-			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
-		];
-		$title = 'Lapak Sudah Ditutup';
-		$caption = 'Silakan kembali ke pencarian atau menu utama';
-		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
-		$this->session->sendInteractiveMessage($interactive);
-	}
 }

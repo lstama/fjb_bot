@@ -78,7 +78,7 @@ class Alamat extends FJB {
 
 		$this->session->setLastSession('alamat_daftar');
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$total_alamat = 0; #maximum counter = 10
@@ -95,10 +95,8 @@ class Alamat extends FJB {
 
 		if ($total_alamat == 0) {
 
-			$interactive = $this->createEmptyAlamatDialog();
-			$this->session->sendInteractiveMessage($interactive);
-		}
-		else {
+			$this->sendEmptyAlamatDialog();
+		} else {
 
 			$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 		}
@@ -124,24 +122,11 @@ class Alamat extends FJB {
 		return $interactive;
 	}
 
-	private function createEmptyAlamatDialog() {
-
-		$buttons = [
-			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
-			$this->session->createButton('/menu', 'Kembali ke Menu Utama.')
-		];
-
-		$caption = "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.";
-		$interactive = $this->session->createInteractive(null, null, $caption, $buttons);
-
-		return $interactive;
-	}
-
 	private function sendAlamatDetails($id) {
 
 		$this->session->setLastSession('alamat_lihat');
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$alamat_exist = false;
@@ -163,15 +148,15 @@ class Alamat extends FJB {
 		}
 
 		$kecamatan = $this->getAreaName($alamat['area_id']);
-		if (! $kecamatan->isSuccess()) return;
+		if (!$kecamatan->isSuccess()) return;
 		$kecamatan = $kecamatan->getContent();
 
 		$kota = $this->getCityName($alamat['city_id']);
-		if (! $kota->isSuccess()) return;
+		if (!$kota->isSuccess()) return;
 		$kota = $kota->getContent();
 
 		$provinsi = $this->getProvinceName($alamat['province_id']);
-		if (! $provinsi->isSuccess()) return;
+		if (!$provinsi->isSuccess()) return;
 		$provinsi = $provinsi->getContent();
 
 		$interactive = $this->session->createInteractive(null, $alamat['name'], $alamat['owner_name']);
@@ -195,20 +180,20 @@ class Alamat extends FJB {
 
 	private function setToDefault($id) {
 
-		$parameter   = [
-						'default' => 'true'
-					];
+		$parameter = [
+			'default' => 'true'
+		];
 
-		$result 	 = $this->post('v1/fjb/location/addresses/' . $id, $parameter);
-		if (! $result->isSuccess()) return;
+		$result = $this->post('v1/fjb/location/addresses/' . $id, $parameter);
+		if (!$result->isSuccess()) return;
 
 		$this->session->setLastSession('alamat_default');
 
-		$buttons 	 = [
+		$buttons = [
 			$this->session->createButton('/alamat_daftar', 'Kembali ke Daftar Alamat'),
 			$this->session->createButton('/menu', 'Kembali ke Menu Utama')
 		];
-		$title 		 ="Alamat Utama Berhasil Diubah";
+		$title = "Alamat Utama Berhasil Diubah";
 		$interactive = $this->session->createInteractive(null, $title, null, $buttons);
 
 		$this->session->sendInteractiveReply($interactive);
@@ -218,7 +203,7 @@ class Alamat extends FJB {
 
 		$this->session->setLastSession('alamat_delete_confirmation');
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$alamat_exist = false;
@@ -240,15 +225,15 @@ class Alamat extends FJB {
 		}
 
 		$kecamatan = $this->getAreaName($alamat['area_id']);
-		if (! $kecamatan->isSuccess()) return;
+		if (!$kecamatan->isSuccess()) return;
 		$kecamatan = $kecamatan->getContent();
 
 		$kota = $this->getCityName($alamat['city_id']);
-		if (! $kota->isSuccess()) return;
+		if (!$kota->isSuccess()) return;
 		$kota = $kota->getContent();
 
 		$provinsi = $this->getProvinceName($alamat['province_id']);
-		if (! $provinsi->isSuccess()) return;
+		if (!$provinsi->isSuccess()) return;
 		$provinsi = $provinsi->getContent();
 
 		$text = $alamat['owner_name'] . "\n"
@@ -279,13 +264,13 @@ class Alamat extends FJB {
 		}
 
 		$result = $this->delete('v1/fjb/location/addresses/' . $id);
-		if (! $result->isSuccess()) return;
+		if (!$result->isSuccess()) return;
 
-		$buttons 	 = [
+		$buttons = [
 			$this->session->createButton('/alamat_daftar', 'Kembali ke Daftar Alamat'),
 			$this->session->createButton('/menu', 'Kembali ke Menu Utama')
 		];
-		$title 		 ="Alamat Berhasil Dihapus";
+		$title = "Alamat Berhasil Dihapus";
 		$interactive = $this->session->createInteractive(null, $title, null, $buttons);
 
 		$this->session->sendInteractiveReply($interactive);
