@@ -140,7 +140,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Get the default User-Agent string to use with Guzzle
+     * Get the default UserAccount-Agent string to use with Guzzle
      *
      * @return string
      */
@@ -345,11 +345,11 @@ class Client implements ClientInterface
         // Add the default user-agent header
         if (!isset($this->defaults['headers'])) {
             $this->defaults['headers'] = [
-                'User-Agent' => static::getDefaultUserAgent()
+                'UserAccount-Agent' => static::getDefaultUserAgent()
             ];
-        } elseif (!Core::hasHeader($this->defaults, 'User-Agent')) {
-            // Add the User-Agent header if one was not already set
-            $this->defaults['headers']['User-Agent'] = static::getDefaultUserAgent();
+        } elseif (!Core::hasHeader($this->defaults, 'UserAccount-Agent')) {
+            // Add the UserAccount-Agent header if one was not already set
+            $this->defaults['headers']['UserAccount-Agent'] = static::getDefaultUserAgent();
         }
     }
 

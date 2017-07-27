@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array();
+$autoload['model'] = array('session_model', 'buy_model', 'create_alamat_model');
 
 
 /* End of file autoload.php */
