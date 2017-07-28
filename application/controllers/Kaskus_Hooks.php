@@ -12,7 +12,7 @@ class Kaskus_Hooks extends CI_Controller {
 	public $oauth_verifier;
 	public $token;
 	private $handler;
-	private $session;
+	private $authorize_session;
 
 	public function __construct() {
 
@@ -31,7 +31,7 @@ class Kaskus_Hooks extends CI_Controller {
 			$this->oauth_token = $this->input->get('oauth_token', TRUE);
 			$this->oauth_verifier = $this->input->get('oauth_verifier', TRUE);
 			$this->token = $this->input->get('token', TRUE);
-			$this->session = new Session;
+			$this->authorize_session = new Authorize_Session;
 		}
 	}
 
@@ -85,11 +85,10 @@ class Kaskus_Hooks extends CI_Controller {
 	public function handleKaskusWebRedirect() {
 
 		#Hanya untuk kasus redirect
-		$user_account = new user($this->oauth_verifier, $this->oauth_token);
 
-		$message = $this->token;
-		$this->session->setUserAccount($user_account);
-		$this->session->setMessage($message);
-		$this->session->authorizeSession();
+		$this->authorize_session->setToken($this->token);
+		$this->authorize_session->setOauthToken($this->oauth_token);
+		$this->authorize_session->setOauthVerifier($this->oauth_verifier);
+		$this->authorize_session->authorizeSession();
 	}
 }

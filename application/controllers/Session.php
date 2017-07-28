@@ -11,11 +11,11 @@ class Session extends Sender {
 
 	/** @var \Kaskus\KaskusClient $kaskus_client */
 	public $kaskus_client;
-	private $last_session;
+	protected $last_session;
 
-	private $session_from_database;
-	private $request_token;
-	private $access_token;
+	protected $session_from_database;
+	protected $request_token;
+	protected $access_token;
 
 	public function __construct() {
 
@@ -24,7 +24,7 @@ class Session extends Sender {
 		$this->initiateKaskusClient();
 	}
 
-	private function initiateKaskusClient() {
+	protected function initiateKaskusClient() {
 
 		$this->kaskus_client = new \Kaskus\KaskusClient($this->consumer_key, $this->consumer_secret, $this->kaskus_api);
 		#TODO : Delete this when in production.
@@ -53,7 +53,7 @@ class Session extends Sender {
 		}
 	}
 
-	private function startSession($error_on_authorization = FALSE) {
+	protected function startSession($error_on_authorization = FALSE) {
 
 		if ($error_on_authorization) {
 
@@ -65,7 +65,7 @@ class Session extends Sender {
 		$this->sendAuthorizeUrl($error_on_authorization);
 	}
 
-	private function createSessionInDatabase() {
+	protected function createSessionInDatabase() {
 
 		$this->getRequestToken();
 
@@ -81,12 +81,12 @@ class Session extends Sender {
 		$this->session_from_database = $this->session_model->find_session($this->username);
 	}
 
-	private function getRequestToken() {
+	protected function getRequestToken() {
 
 		$this->request_token = $this->kaskus_client->getRequestToken($this->callback_url);
 	}
 
-	private function sendAuthorizeUrl($error_on_authorization = FALSE) {
+	protected function sendAuthorizeUrl($error_on_authorization = FALSE) {
 
 		$this->kaskus_client->setCredentials($this->session_from_database['token'], $this->session_from_database['token_secret']);
 
@@ -106,7 +106,7 @@ class Session extends Sender {
 	}
 
 	#Call API to check user status;
-	private function isAuthorized() {
+	protected function isAuthorized() {
 
 		try {
 
@@ -120,94 +120,6 @@ class Session extends Sender {
 
 			return false;
 		}
-	}
-
-	public function authorizeSession() {
-
-		$this->session_from_database = $this->session_model->find_token($this->username);
-
-		$this->username = $this->session_from_database['username'];
-		$this->setJID($this->session_from_database['JID']);
-
-		$this->kaskus_client->setCredentials($this->message, $this->session_from_database['token_secret']);
-
-		$this->access_token = $this->kaskus_client->getAccessToken();
-
-		if ($this->access_token['access'] === 'GRANTED') {
-
-			#username tidak sama dengan username login
-			if ($this->username != $this->access_token['username']) {
-
-				$this->differentAccountAuthorization();
-				return;
-			}
-
-			$this->authorizationSuccess();
-			return;
-
-		}
-
-		if ($this->access_token['access'] === 'DENIED') {
-
-			$this->authorizationFailed();
-			return;
-		}
-	}
-
-	private function authorizationSuccess() {
-
-		$this->status = 'logged_on';
-		$this->last_session = 'logged_on';
-
-		$data = array(
-			'token' => $this->access_token['oauth_token'],
-			'token_secret' => $this->access_token['oauth_token_secret'],
-			'last_session' => $this->last_session,
-			'userid' => $this->access_token['userid'],
-			'user' => $this->access_token['username']
-		);
-
-		$this->session_model->update_session($this->session_from_database['username'], $data);
-		$this->message = '/menu';
-
-		$this->redirectToMenuUtama();
-		echo "Authorisasi berhasil. Silakan kembali ke apps untuk mulai melanjutkan.";
-	}
-
-	private function differentAccountAuthorization() {
-
-		$this->renewAuthorization();
-		echo "Authorisasi gagal, akun Kaskus Chat dan akun authorisasi berbeda. 
-					Silakan logout terlebih dahulu dari akun authorisasi yang sekarang (dari browser). 
-					Kami telah mengirimkan link authorisasi yang baru, silakan buka Kaskus Chat lagi.";
-	}
-
-	private function authorizationFailed() {
-
-		$this->renewAuthorization();
-		echo "Authorisasi gagal. Silakan kembali ke apps untuk mendapatkan link authorisasi yang baru.";
-	}
-
-	private function renewAuthorization() {
-
-		$this->status = 'trying_to_login';
-		$this->last_session = 'trying_to_login';
-
-		$this->session_model->delete_session($this->session_from_database['username']);
-
-		$this->startSession(TRUE);
-	}
-
-	private function redirectToMenuUtama() {
-
-		$this->setLastSession('menu');
-
-		$buttons = [$this->createButton('/menu', 'Menu Utama')];
-		$title = 'Login Berhasil';
-		$caption = "Silakan klik tombol di bawah ini untuk melanjutkan.";
-		$interactive = $this->createInteractive(null, $title, $caption, $buttons);
-
-		$this->sendInteractiveMessage($interactive);
 	}
 
 	public function setLastSession($last_session) {
