@@ -55,6 +55,7 @@ class Buy_Start extends FJB {
 
 	public function startBuy($thread_id) {
 
+
 		$buy = $this->session->buy_model->find_buy($this->session->username);
 
 		if (empty($buy)) {
@@ -87,13 +88,16 @@ class Buy_Start extends FJB {
 			case 'not_found':
 				$this->sendThreadNotFoundDialog();
 				break;
+
+			default:
+				break;
 		}
 	}
 
 	public function getThreadType($thread_id) {
 
 		$response = $this->get('v1/lapak/' . $thread_id, []);
-		if (!$response->isSuccess()) return 'not_found';
+		if (!$response->isSuccess()) return 'error';
 		$response = $response->getContent();
 
 		if (isset($response['thread']['is_instant_purchase'])) {

@@ -11,27 +11,27 @@ class Buy_model extends CI_Model {
 
 		if ($user === false) {
 
-			$query = $this->db->get('Buy_Start');
+			$query = $this->db->get('buy');
 			return $query->result_array();
 		}
 
-		$query = $this->db->get_where('Buy_Start', array('user' => $user));
+		$query = $this->db->get_where('buy', array('user' => $user));
 		return $query->row_array();
 	}
 
 	public function create_buy($data = null){
 
-		return $this->db->insert('Buy_Start', $data); //boolean
+		return $this->db->insert('buy', $data); //boolean
 	}
 
   	public function update_buy($user, $data){
 
       	$this->db->where('user',$user);
-      	return $this->db->update('Buy_Start', $data); //boolean
+      	return $this->db->update('buy', $data); //boolean
   }
 
   	public function delete_buy($user = null) {
 
-  		return $this->db->where('user', $user)->delete('Buy_Start');
+  		return $this->db->where('user', $user)->delete('buy');
   	}
 }
