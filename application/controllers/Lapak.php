@@ -1,6 +1,7 @@
 <?php
 
 include_once 'FJB.php';
+include_once 'Lapak_Details.php';
 
 class Lapak extends FJB {
 
@@ -18,7 +19,12 @@ class Lapak extends FJB {
 
 			case 'details':
 
-				$this->showDetails($message_suffix);
+				$details = new Lapak_Details();
+				$details->setMessageNow($message_suffix);
+				$details->setSessionNow($this->session_now);
+				$details->setSession($this->session);
+				$details->showDetails();
+				break;
 				break;
 
 			default:
@@ -140,67 +146,5 @@ class Lapak extends FJB {
 
 		$this->session->message = $barang;
 		$this->sendSearchResult($page);
-	}
-
-	private function showDetails($thread_id) {
-
-		$response = $this->get('v1/post/' . $thread_id);
-		if (!$response->isSuccess()) return;
-		$response = $response->getContent();
-
-		if ($this->isThreadClosed($response)) {
-
-			$this->sendThreadClosedDialog();
-			return;
-		}
-
-		$title = $response['thread']['title'];
-		$price = "Harga : " . $this->toRupiah($response['thread']['discounted_price']);
-		if ($response['thread']['discount'] > 0) {
-
-			$price .= "\nHarga sebelum diskon : " . $this->toRupiah($response['thread']['item_price']);
-		}
-		$interactive = $this->session->createInteractive(null, $title, $price, null);
-		$this->session->sendInteractiveMessage($interactive);
-
-		$photos = [];
-		foreach ($response['thread']['resources']['images_thumbnail'] as $key => $thumbnail_url) {
-
-			$fullsize_url = $response['thread']['resources']['images'][$key];
-			$buttons = [$this->session->createButton($fullsize_url, 'Lihat Ukuran Penuh')];
-			$photo = $this->session->createInteractive($thumbnail_url, null, null, $buttons);
-			array_push($photos, $photo);
-		}
-
-		$this->session->sendMultipleInteractiveMessage($photos);
-
-		$attribute = "Lokasi : " . $this->getProvinceNameFromOldKaskus($response['thread']['item_location']);
-		$attribute .= "\nKondisi : " . $this->getItemConditionName($response['thread']['item_condition']);
-
-		if (isset($response['thread']['shipping']['weight'])) {
-
-			$attribute .= "\nBerat : " . $response['thread']['shipping']['weight'] . " gram";
-		}
-
-		foreach ($response['thread']['extra_attributes'] as $extra_attribute) {
-
-			$attribute .= "\n" . $extra_attribute['attribute'] . " : " . $extra_attribute['value'];
-		}
-		$this->session->sendMessage($attribute);
-
-		#send info lengkap
-		$this->session->sendMessage($response['posts'][0]['post'][0]['text']);
-		$post_id = $response['thread']['thread_id'];
-		$buttons = [
-			$this->session->createButton('/buy_start_' . $post_id, 'Beli'),
-			$this->session->createButton('/keranjang_tambah_' . $post_id, 'Tambah ke Keranjang'),
-			$this->session->createButton('back', 'Kembali Ke Pencarian'),
-			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
-		];
-
-		$interactive = $this->session->createInteractive(null, null, null, $buttons);
-		$this->session->sendInteractiveMessage($interactive);
-
-		return;
 	}
 }
