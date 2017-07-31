@@ -25,7 +25,7 @@ class Lapak_Details extends FJB{
 		$this->sendLapakPhotos($response);
 		$this->sendLapakAttribute($response);
 		$this->sendLapakDetails($response);
-		$this->sendSellerInfo($response);
+		$this->sendSellerInfo($seller_info);
 		$this->sendLapakOption($response);
 		return;
 	}
@@ -94,10 +94,15 @@ class Lapak_Details extends FJB{
 
 	private function sendSellerInfo($seller_info) {
 
-		$seller_username = $response['posts'][0]['post_username'];
-		$seller_id = $response['posts'][0]['post_userid'];
-
-		$seller_data =
+		$username = $seller_info['username'];
+		$profile_picture = $seller_info['profilepicture'];
+		$user_title = $seller_info['usertitle'];
+		$feedback_percentage = $seller_info['feedback']['percentage'];
+		$feedback_point = $seller_info['feedback']['point'];
+		$text = $user_title . '\n'
+			. 'Feedback : ' . $feedback_percentage . '% (' . $feedback_point . ')';
+		$interactive = $this->session->createInteractive($profile_picture, $username, $text);
+		$this->session->sendInteractiveMessage($interactive);
 	}
 
 }
