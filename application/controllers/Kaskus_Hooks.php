@@ -2,6 +2,7 @@
 
 include_once 'User_Account.php';
 include_once 'Main_Handler.php';
+include_once 'Authorize_Session.php';
 
 class Kaskus_Hooks extends CI_Controller {
 

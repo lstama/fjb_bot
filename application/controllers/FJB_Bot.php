@@ -87,7 +87,7 @@ class FJB_Bot extends Features {
 				$lapak->lastSessionSpecific();
 				break;
 
-			case 'Buy_Start':
+			case 'buy':
 
 				$buy = new Buy_Start;
 				$buy->setMessageNow($this->message_now);
@@ -117,7 +117,6 @@ class FJB_Bot extends Features {
 
 		$buttons = [
 			$this->session->createButton('/alamat_daftar', 'Daftar Alamat'),
-			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
 			$this->session->createButton('/keranjang_daftar', 'Keranjang'),
 			$this->session->createButton('/lapak_start', 'Cari Barang')
 		];

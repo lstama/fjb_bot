@@ -99,6 +99,15 @@ class Alamat extends FJB {
 		} else {
 
 			$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+
+			$buttons = [];
+			if ($total_alamat < 10) {
+
+				array_push($buttons, $this->session->createButton('/alamat_create', 'Buat Alamat Baru'));
+			}
+			array_push($buttons, $this->session->createButton('/menu', 'Kembali ke Menu Utama'));
+			$interactive = $this->session->createInteractive(null, null, null, $buttons);
+			$this->session->sendInteractiveMessage($interactive);
 		}
 	}
 

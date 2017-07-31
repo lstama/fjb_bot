@@ -21,7 +21,7 @@ class Authorize_Session  extends Session {
 		$this->username = $this->session_from_database['username'];
 		$this->setJID($this->session_from_database['JID']);
 
-		$this->kaskus_client->setCredentials($this->message, $this->session_from_database['token_secret']);
+		$this->kaskus_client->setCredentials($this->token, $this->session_from_database['token_secret']);
 
 		$this->access_token = $this->kaskus_client->getAccessToken();
 

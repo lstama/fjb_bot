@@ -35,6 +35,8 @@ class Buy_Instant extends Buy {
 
 	public function selectQuantity() {
 
+
+		echo 'test';
 		$result = $this->checkQuantity();
 		if ($result == 'failed') return;
 
