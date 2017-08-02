@@ -144,16 +144,21 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendMessage('Silakan pilih provinsi lokasi tujuan.');
 
+		$this->sendLocationButtons($response);
+	}
+
+	private function sendLocationButtons($response) {
+
 		$counter = 0; #maximum counter = 50
 		$button_counter = 0; #maximum button counter = 5
 		$multiple_interactive = [];
 		$buttons = [];
 
-		foreach ($response['data'] as $provinsi) {
+		foreach ($response['data'] as $location) {
 
 			$counter += 1;
 			$button_counter += 1;
-			array_push($buttons, $this->session->createButton($provinsi['id'], $provinsi['name']));
+			array_push($buttons, $this->session->createButton($location['id'], $location['name']));
 
 			if (($button_counter == 5) or ($counter == count($response['data']))) {
 
@@ -198,28 +203,7 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendMessage('Silakan pilih kabupaten/kota lokasi tujuan.');
 
-		$counter = 0;
-		$button_counter = 0;
-		$multiple_interactive = [];
-		$buttons = [];
-
-		foreach ($response['data'] as $kota) {
-
-			$counter += 1;
-			$button_counter += 1;
-
-			array_push($buttons, $this->session->createButton($kota['id'], $kota['name']));
-
-			if (($button_counter == 5) or ($counter == count($response['data']))) {
-
-				$temp = $this->session->createInteractive(null, null, null, $buttons);
-				array_push($multiple_interactive, $temp);
-				$buttons = [];
-				$button_counter = 0;
-			}
-		}
-
-		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+		$this->sendLocationButtons($response);
 	}
 
 
@@ -273,27 +257,7 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendMessage('Silakan pilih kecamatan lokasi tujuan.');
 
-		$counter = 0;
-		$button_counter = 0;
-		$multiple_interactive = [];
-		$buttons = [];
-
-		foreach ($response['data'] as $kecamatan) {
-
-			$counter += 1;
-			$button_counter += 1;
-			array_push($buttons, $this->session->createButton($kecamatan['id'], $kecamatan['name']));
-
-			if (($button_counter == 5) or ($counter == count($response['data']))) {
-
-				$temp = $this->session->createInteractive(null, null, null, $buttons);
-				array_push($multiple_interactive, $temp);
-				$buttons = [];
-				$button_counter = 0;
-			}
-		}
-
-		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+		$this->sendLocationButtons($response);
 	}
 
 	private function createKecamatan() {
@@ -415,4 +379,6 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendInteractiveMessage($interactive);
 	}
+
+
 }

@@ -1,7 +1,7 @@
 <?php
 
 require 'vendor/autoload.php';
-include 'Sender.php';
+include_once 'Sender.php';
 
 class Session extends Sender {
 

@@ -99,7 +99,7 @@ class Lapak_Details extends FJB{
 		$user_title = $seller_info['usertitle'];
 		$feedback_percentage = $seller_info['feedback']['percentage'];
 		$feedback_point = $seller_info['feedback']['point'];
-		$text = $user_title . '\n'
+		$text = $user_title . "\n"
 			. 'Feedback : ' . $feedback_percentage . '% (' . $feedback_point . ')';
 		$interactive = $this->session->createInteractive($profile_picture, $username, $text);
 		$this->session->sendInteractiveMessage($interactive);
