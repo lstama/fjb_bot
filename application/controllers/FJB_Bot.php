@@ -1,9 +1,10 @@
-<?php 
+<?php
 
 include_once 'Features.php';
 include_once 'Alamat.php';
 include_once 'Lapak.php';
-include_once 'Buy.php';
+include_once 'Buy_Start.php';
+include_once 'Keranjang.php';
 
 class FJB_Bot extends Features {
 
@@ -39,16 +40,25 @@ class FJB_Bot extends Features {
 
 			case '/buy':
 
-				$buy = new Buy;
+				$buy = new Buy_Start;
 				$buy->setMessageNow($message_suffix);
 				$buy->setSessionNow($this->session_now);
 				$buy->setSession($this->session);
 				$buy->main();
 				break;
 
-		    default:
+			case '/keranjang':
 
-		    	$this->lastSessionSpecific();
+				$keranjang = new Keranjang;
+				$keranjang->setMessageNow($message_suffix);
+				$keranjang->setSessionNow($this->session_now);
+				$keranjang->setSession($this->session);
+				$keranjang->main();
+				break;
+
+			default:
+
+				$this->lastSessionSpecific();
 		}
 	}
 
@@ -79,16 +89,25 @@ class FJB_Bot extends Features {
 
 			case 'buy':
 
-				$buy = new Buy;
+				$buy = new Buy_Start;
 				$buy->setMessageNow($this->message_now);
 				$buy->setSessionNow($session_suffix);
 				$buy->setSession($this->session);
 				$buy->lastSessionSpecific();
 				break;
 
-		    default:
+			case 'keranjang':
 
-		    	$this->sendUnrecognizedCommandDialog();
+				$keranjang = new Keranjang;
+				$keranjang->setMessageNow($this->message_now);
+				$keranjang->setSessionNow($session_suffix);
+				$keranjang->setSession($this->session);
+				$keranjang->lastSessionSpecific();
+				break;
+
+			default:
+
+				$this->sendUnrecognizedCommandDialog();
 		}
 	}
 
@@ -98,11 +117,11 @@ class FJB_Bot extends Features {
 
 		$buttons = [
 			$this->session->createButton('/alamat_daftar', 'Daftar Alamat'),
-			$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
+			$this->session->createButton('/keranjang_daftar', 'Keranjang'),
 			$this->session->createButton('/lapak_start', 'Cari Barang')
-			];
-		$title	 	 = "Menu Utama";
-		$caption 	 = "Silakan pilih menu di bawah untuk melanjutkan.";
+		];
+		$title = "Menu Utama";
+		$caption = "Silakan pilih menu di bawah untuk melanjutkan.";
 		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
 		$this->session->sendInteractiveMessage($interactive);

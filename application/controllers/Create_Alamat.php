@@ -14,7 +14,7 @@ class Create_Alamat extends FJB {
 		}
 
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		if (count($response['data']) >= 10) {
@@ -32,8 +32,8 @@ class Create_Alamat extends FJB {
 
 		$this->session->setLastSession('menu');
 
-		$buttons	 = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
-		$title 		 = "Jumlah Alamat Sudah Maksimum";
+		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
+		$title = "Jumlah Alamat Sudah Maksimum";
 		$interactive = $this->session->createInteractive(null, $title, null, $buttons, null);
 
 		$this->session->sendInteractiveReply($interactive);
@@ -120,9 +120,9 @@ class Create_Alamat extends FJB {
 
 		if ((!is_numeric($telp)) or (strlen($telp) > 13)) {
 
-			$buttons	 = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
-			$title		 = 'Nomor Tidak Valid';
-			$caption	 = "Silakan masukkan nomor yang valid atau kembali ke menu utama.";
+			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
+			$title = 'Nomor Tidak Valid';
+			$caption = "Silakan masukkan nomor yang valid atau kembali ke menu utama.";
 			$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 
 			$this->session->sendInteractiveMessage($interactive);
@@ -139,23 +139,28 @@ class Create_Alamat extends FJB {
 	private function sendProvinceList() {
 
 		$response = $this->get('v1/fjb/location/provinces');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$this->session->sendMessage('Silakan pilih provinsi lokasi tujuan.');
+
+		$this->sendLocationButtons($response);
+	}
+
+	private function sendLocationButtons($response) {
 
 		$counter = 0; #maximum counter = 50
 		$button_counter = 0; #maximum button counter = 5
 		$multiple_interactive = [];
 		$buttons = [];
 
-		foreach ($response['data'] as $provinsi) {
+		foreach ($response['data'] as $location) {
 
 			$counter += 1;
-			$button_counter +=1;
-			array_push($buttons, $this->session->createButton($provinsi['id'], $provinsi['name']));
+			$button_counter += 1;
+			array_push($buttons, $this->session->createButton($location['id'], $location['name']));
 
-			if (($button_counter == 5) or ($counter == count($response['data'])) ) {
+			if (($button_counter == 5) or ($counter == count($response['data']))) {
 
 				$temp = $this->session->createInteractive(null, null, null, $buttons);
 				array_push($multiple_interactive, $temp);
@@ -166,6 +171,7 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 	}
+
 	private function createProvinsi() {
 
 		$provinsi = $this->session->message;
@@ -190,35 +196,14 @@ class Create_Alamat extends FJB {
 	}
 
 	private function sendCityList($provinsi) {
-		
+
 		$response = $this->get('v1/fjb/location/provinces/' . $provinsi . '/cities');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$this->session->sendMessage('Silakan pilih kabupaten/kota lokasi tujuan.');
 
-		$counter = 0;
-		$button_counter = 0;
-		$multiple_interactive = [];
-		$buttons = [];
-
-		foreach ($response['data'] as $kota) {
-
-			$counter += 1;
-			$button_counter +=1;
-
-			array_push($buttons, $this->session->createButton($kota['id'], $kota['name']));
-
-			if (($button_counter == 5) or ($counter == count($response['data'])) ) {
-
-				$temp = $this->session->createInteractive(null, null, null, $buttons);
-				array_push($multiple_interactive, $temp);
-				$buttons = [];
-				$button_counter = 0;
-			}
-		}
-
-		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+		$this->sendLocationButtons($response);
 	}
 
 
@@ -229,7 +214,7 @@ class Create_Alamat extends FJB {
 		$provinsi = $this->session->create_alamat_model->find_create_alamat($this->session->username);
 		$provinsi = $provinsi['provinsi'];
 
-		if ((! is_numeric($kota)) or $this->isCityNotExist($provinsi, $kota)) {
+		if ((!is_numeric($kota)) or $this->isCityNotExist($provinsi, $kota)) {
 
 			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
 			$title = 'Kota Tidak Valid';
@@ -252,7 +237,7 @@ class Create_Alamat extends FJB {
 	private function isCityNotExist($province, $city) {
 
 		$response = $this->get('v1/fjb/location/provinces/' . $province . '/cities');
-		if (! $response->isSuccess()) return true;
+		if (!$response->isSuccess()) return true;
 		$response = $response->getContent();
 
 		$not_exist = true;
@@ -267,32 +252,12 @@ class Create_Alamat extends FJB {
 	private function sendAreaList($kota) {
 
 		$response = $this->get('v1/fjb/location/cities/' . $kota . '/areas');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$this->session->sendMessage('Silakan pilih kecamatan lokasi tujuan.');
 
-		$counter = 0;
-		$button_counter = 0;
-		$multiple_interactive = [];
-		$buttons = [];
-
-		foreach ($response['data'] as $kecamatan) {
-
-			$counter += 1;
-			$button_counter +=1;
-			array_push($buttons, $this->session->createButton($kecamatan['id'], $kecamatan['name']));
-
-			if (($button_counter == 5) or ($counter == count($response['data'])) ) {
-
-				$temp = $this->session->createInteractive(null, null, null, $buttons);
-				array_push($multiple_interactive, $temp);
-				$buttons = [];
-				$button_counter = 0;
-			}
-		}
-
-		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+		$this->sendLocationButtons($response);
 	}
 
 	private function createKecamatan() {
@@ -302,7 +267,7 @@ class Create_Alamat extends FJB {
 		$kota = $this->session->create_alamat_model->find_create_alamat($this->session->username);
 		$kota = $kota['kota'];
 
-		if ((! is_numeric($kecamatan)) or $this->isAreaNotExist($kota, $kecamatan)) {
+		if ((!is_numeric($kecamatan)) or $this->isAreaNotExist($kota, $kecamatan)) {
 
 			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
 			$title = 'Kecamatan Tidak Valid';
@@ -324,7 +289,7 @@ class Create_Alamat extends FJB {
 	private function isAreaNotExist($city, $area) {
 
 		$response = $this->get('v1/fjb/location/cities/' . $city . '/areas');
-		if (! $response->isSuccess()) return true;
+		if (!$response->isSuccess()) return true;
 		$response = $response->getContent();
 
 		$not_exist = true;
@@ -351,15 +316,15 @@ class Create_Alamat extends FJB {
 		$temp = $this->session->create_alamat_model->find_create_alamat($this->session->username);
 
 		$kecamatan = $this->getAreaName($temp['kecamatan']);
-		if (! $kecamatan->isSuccess()) return;
+		if (!$kecamatan->isSuccess()) return;
 		$kecamatan = $kecamatan->getContent();
 
 		$kota = $this->getCityName($temp['kota']);
-		if (! $kota->isSuccess()) return;
+		if (!$kota->isSuccess()) return;
 		$kota = $kota->getContent();
 
 		$provinsi = $this->getProvinceName($temp['provinsi']);
-		if (! $provinsi->isSuccess()) return;
+		if (!$provinsi->isSuccess()) return;
 		$provinsi = $provinsi->getContent();
 
 		$text = "Label Alamat : " . $temp['label'] .
@@ -405,6 +370,7 @@ class Create_Alamat extends FJB {
 		];
 
 		$result = $this->post('v1/fjb/location/addresses', $parameter);
+		if (!$result->isSuccess()) return;
 
 		$this->session->setLastSession('alamat_daftar');
 		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
@@ -413,4 +379,6 @@ class Create_Alamat extends FJB {
 
 		$this->session->sendInteractiveMessage($interactive);
 	}
+
+
 }

@@ -1,6 +1,7 @@
 <?php
 
 include_once 'FJB.php';
+include_once 'Lapak_Details.php';
 
 class Lapak extends FJB {
 
@@ -18,7 +19,12 @@ class Lapak extends FJB {
 
 			case 'details':
 
-				$this->showDetails($message_suffix);
+				$details = new Lapak_Details();
+				$details->setMessageNow($message_suffix);
+				$details->setSessionNow($this->session_now);
+				$details->setSession($this->session);
+				$details->showDetails();
+				break;
 				break;
 
 			default:
@@ -69,15 +75,15 @@ class Lapak extends FJB {
 			]
 		];
 		$response = $this->get('search/lapak', $query);
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$counter = 0; #maximum counter = 10
 		$multiple_interactive = [];
 		foreach ($response['item'] as $lapak) {
 
-			if (! isset($lapak['payment_mechanism'])) continue;
-			if (! in_array('3', $lapak['payment_mechanism'])) continue;
+			if (!isset($lapak['payment_mechanism'])) continue;
+			if (!in_array('3', $lapak['payment_mechanism'])) continue;
 
 			$counter += 1;
 			if ($counter == 11) break;
@@ -100,7 +106,7 @@ class Lapak extends FJB {
 
 			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama.')];
 			$title = "Barang Tidak Ditemukan";
-			$interactive= $this->session->createInteractive(null, $title, null, $buttons);
+			$interactive = $this->session->createInteractive(null, $title, null, $buttons);
 			$this->session->sendInteractiveMessage($interactive);
 			return;
 		}
@@ -125,108 +131,20 @@ class Lapak extends FJB {
 
 	private function searchNext($last_session) {
 
-		$page 	= $this->getPrefix($last_session);
+		$page = $this->getPrefix($last_session);
 		$barang = $this->getSuffix($last_session);
 		if ($this->session->message == 'prev') {
 			$page -= 1;
-		}
-		elseif ($this->session->message == 'next') {
+		} elseif ($this->session->message == 'next') {
 			$page += 1;
-		}
-		elseif ($this->session->message == 'back') {
+		} elseif ($this->session->message == 'back') {
 			#do nothing;
-		}
-		else {
+		} else {
 			$this->sendUnrecognizedCommandDialog();
 			return;
 		}
 
 		$this->session->message = $barang;
 		$this->sendSearchResult($page);
-	}
-
-	private function showDetails($thread_id) {
-
-		$response = $this->get('v1/post/' . $thread_id);
-		if (! $response->isSuccess()) return;
-		$response = $response->getContent();
-
-		if ($this->isThreadClosed($response)) {
-
-			$this->sendThreadClosedDialog();
-			return;
-		}
-
-		$title = $response['thread']['title'];
-		$price = "Harga : " . $this->toRupiah($response['thread']['discounted_price']);
-		if ($response['thread']['discount'] > 0) {
-
-			$price .= "\nHarga sebelum diskon : " . $this->toRupiah($response['thread']['item_price']);
-		}
-		$interactive = $this->session->createInteractive(null, $title, $price, null);
-		$this->session->sendInteractiveMessage($interactive);
-
-		$photos = [];
-		foreach ($response['thread']['resources']['images_thumbnail'] as $key => $thumbnail_url) {
-
-			$fullsize_url = $response['thread']['resources']['images'][$key];
-			$buttons = [$this->session->createButton($fullsize_url, 'Lihat Ukuran Penuh')];
-			$photo = $this->session->createInteractive($thumbnail_url,null,null, $buttons);
-			array_push($photos, $photo);
-		}
-
-		$this->session->sendMultipleInteractiveMessage($photos);
-
-		$attribute = "Lokasi : " . $this->getProvinceNameFromOldKaskus($response['thread']['item_location']);
-		$attribute .= "\nKondisi : " . $this->getItemConditionName($response['thread']['item_condition']);
-
-		if (isset($response['thread']['shipping']['weight'])) {
-
-			$attribute .= "\nBerat : " . $response['thread']['shipping']['weight'] . " gram";
-		}
-
-		foreach ($response['thread']['extra_attributes'] as $extra_attribute) {
-
-			$attribute .= "\n" . $extra_attribute['attribute'] . " : " . $extra_attribute['value'];
-		}
-		$this->session->sendMessage($attribute);
-
-		#send info lengkap
-		$this->session->sendMessage($response['posts'][0]['post'][0]['text']);
-
-		$buttons = [
-			$this->session->createButton('/buy_start_' . $response['thread']['thread_id'], 'Beli'),
-			$this->session->createButton('back', 'Kembali Ke Pencarian'),
-			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
-		];
-
-		$interactive = $this->session->createInteractive(null, null, null, $buttons);
-		$this->session->sendInteractiveMessage($interactive);
-
-		return;
-	}
-
-	private function isThreadClosed($response) {
-
-		if ($response['thread']['open'] == 1) {
-
-			return false;
-		}
-		else {
-
-			return true;
-		}
-	}
-
-	private function sendThreadClosedDialog() {
-
-		$buttons = [
-			$this->session->createButton('back', 'Kembali Ke Pencarian'),
-			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
-		];
-		$title = 'Lapak Sudah Ditutup';
-		$caption = 'Silakan kembali ke pencarian atau menu utama';
-		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
-		$this->session->sendInteractiveMessage($interactive);
 	}
 }

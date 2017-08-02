@@ -1,14 +1,14 @@
 <?php
 
-include_once 'FJB.php';
+include_once 'Buy.php';
 
-class Buy_Normal extends FJB {
+class Buy_Normal extends Buy {
 
 
 	public function normalBuy() {
 
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return;
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$counter = 0;
@@ -33,13 +33,7 @@ class Buy_Normal extends FJB {
 
 		if ($counter == 0) {
 
-			$buttons = [
-				$this->session->createButton('/alamat_create', 'Buat Alamat Baru'),
-				$this->session->createButton('/menu', 'Kembali ke Menu Utama.')
-			];
-			$caption = "Anda belum mempunyai alamat yang tersimpan.\nSilakan menambahkan alamat baru.";
-			$interactive = $this->session->createInteractive(null, null, $caption, $buttons);
-			$this->session->sendInteractiveMessage($interactive);
+			$this->sendEmptyAlamatDialog();
 			return;
 
 		}
@@ -92,7 +86,7 @@ class Buy_Normal extends FJB {
 				'buyer_name' => $result['owner_name'],
 				'buyer_phone' => $result['owner_phone'],
 				'dest_id' => $result['area_id'],
-				'address_id' =>$result['id']
+				'address_id' => $result['id']
 			];
 			$this->session->buy_model->update_buy($this->session->username, $alamat);
 
@@ -110,7 +104,7 @@ class Buy_Normal extends FJB {
 	public function getAlamat($id) {
 
 		$response = $this->get('v1/fjb/location/addresses');
-		if (! $response->isSuccess()) return $response;
+		if (!$response->isSuccess()) return $response;
 		$result = $response;
 		$response = $response->getContent();
 
@@ -127,24 +121,10 @@ class Buy_Normal extends FJB {
 		return $result;
 	}
 
-	public function sendQuantity() {
-
-		$this->session->sendMessage('Silakan masukkan jumlah barang yang akan dibeli. (1 - 99)');
-	}
-
 	public function selectQuantity() {
 
-		$jumlah = $this->session->message;
-
-		if ((! is_numeric($jumlah)) or ($jumlah < 1) or ($jumlah > 99)) {
-
-			$this->session->sendMessage('Jumlah tidak valid.');
-			$this->sendQuantity();
-			return;
-		}
-
-		$quantity = ['quantity' => $jumlah];
-		$this->session->buy_model->update_buy($this->session->username, $quantity);
+		$result = $this->checkQuantity();
+		if ($result == 'failed') return;
 
 		$this->session->setLastSession('buy_normal_shipping');
 		$this->sendShipping();
@@ -153,18 +133,8 @@ class Buy_Normal extends FJB {
 
 	public function sendShipping() {
 
-		$buy = $this->session->buy_model->find_buy($this->session->username);
-
-		$query = [
-			'query' => [
-				'thread_id' => $buy['thread_id'],
-				'dest_id' => $buy['dest_id'],
-				'quantity' => $buy['quantity']
-			]
-		];
-
-		$response = $this->get('v1/fjb/lapak/' . $buy['thread_id'] . '/shipping_costs', $query);
-		if (! $response->isSuccess()) return;
+		$response = $this->getShippingCost();
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$counter = 0;
@@ -196,9 +166,8 @@ class Buy_Normal extends FJB {
 		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
 	}
 
-	public function selectShippingAgent() {
+	private function getShippingCost() {
 
-		$choice = $this->session->message;
 		$buy = $this->session->buy_model->find_buy($this->session->username);
 
 		$query = [
@@ -208,8 +177,16 @@ class Buy_Normal extends FJB {
 				'quantity' => $buy['quantity']
 			]
 		];
+
 		$response = $this->get('v1/fjb/lapak/' . $buy['thread_id'] . '/shipping_costs', $query);
-		if (! $response->isSuccess()) return;
+		return $response;
+	}
+
+	public function selectShippingAgent() {
+
+		$choice = $this->session->message;
+		$response = $this->getShippingCost();
+		if (!$response->isSuccess()) return;
 		$response = $response->getContent();
 
 		$jasa_exist = false;
@@ -236,7 +213,7 @@ class Buy_Normal extends FJB {
 			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
 			$title = "Metode pengiriman tidak valid.";
 			$caption = 'Silakan pilih metode pengiriman yang valid atau kembali ke menu utama.';
-			$interactive = $this->session->createInteractive(null,$title, $caption, $buttons);
+			$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 			$this->session->sendInteractiveMessage($interactive);
 			$this->sendShipping();
 			return;
@@ -287,15 +264,15 @@ class Buy_Normal extends FJB {
 		$result = $result->getContent();
 
 		$kecamatan = $this->getAreaName($result['area_id']);
-		if (! $kecamatan->isSuccess()) return;
+		if (!$kecamatan->isSuccess()) return;
 		$kecamatan = $kecamatan->getContent();
 
 		$kota = $this->getCityName($result['city_id']);
-		if (! $kota->isSuccess()) return;
+		if (!$kota->isSuccess()) return;
 		$kota = $kota->getContent();
 
 		$provinsi = $this->getProvinceName($result['province_id']);
-		if (! $provinsi->isSuccess()) return;
+		if (!$provinsi->isSuccess()) return;
 		$provinsi = $provinsi->getContent();
 
 		$interactive = $this->session->createInteractive(null, $result['name'], $result['owner_name']);
@@ -319,29 +296,7 @@ class Buy_Normal extends FJB {
 		$this->session->sendInteractiveMessage($interactive);
 	}
 
-	public function getBarang($thread_id) {
-
-		$response = $this->get('v1/lapak/' . $thread_id, []);
-		if (! $response->isSuccess()) return $response;
-		$response = $response->getContent();
-
-		return $response;
-	}
-
-	public function displayBarang($barang) {
-
-		$title = $barang['thread']['title'];
-		$price = "Harga : " . $this->toRupiah($barang['thread']['discounted_price']);
-		if ($barang['thread']['discount'] > 0) {
-
-			$price .= "\nHarga sebelum diskon : " . $this->toRupiah($barang['thread']['item_price']);
-		}
-		$image_thumbnail = $barang['thread']['resources']['thumbnail'];
-		$interactive = $this->session->createInteractive($image_thumbnail, $title, $price);
-		$this->session->sendInteractiveMessage($interactive);
-	}
-
-	public function selectConfirmation($type = 'normal') {
+	public function selectConfirmation() {
 
 		if ($this->session->message == 'ya') {
 
@@ -358,21 +313,10 @@ class Buy_Normal extends FJB {
 			];
 
 			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/buy_now', $parameter);
-			if (! $response->isSuccess()) return;
+			if (!$response->isSuccess()) return;
 			$response = $response->getContent();
 
-			$this->session->setLastSession('buy_checkout_' . $buy['thread_id']);
-
-			$buttons = [
-				$this->session->createButton($response['checkout_url'], 'Lanjut ke Pembayaran'),
-				$this->session->createButton('/menu', 'Kembali ke Menu Utama')
-			];
-			$title = "Pemesanan Berhasil";
-			$caption = 'Silakan klik tombol di bawah ini untuk lanjut ke pembayaran';
-			$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
-
-			$this->session->sendInteractiveReply($interactive);
+			$this->sendCheckoutUrl($response, $buy);
 		}
 	}
-
 }

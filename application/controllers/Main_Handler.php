@@ -2,8 +2,9 @@
 
 include_once 'Session.php';
 include_once 'FJB_Bot.php';
+include_once 'Sender.php';
 
-class Main_Handler {
+class Main_Handler extends Sender {
 
 	private $user_account;
 	private $message;
@@ -15,12 +16,7 @@ class Main_Handler {
 			#Default
 			if ($this->message == 'halo') {
 
-				http_response_code(200);
-				header('Content-Type: application/json');
-				$data = ["body" => 'halo juga!'];
-				$data = json_encode($data);
-
-				echo $data;
+				$this->sendReply('Halo juga!');
 				return;
 			}
 
@@ -33,6 +29,10 @@ class Main_Handler {
 				$bot->setSession($session);
 				$bot->main();
 			}
+		} else {
+
+			$this->sendReply('Bot tidak dapat menerima pesan yang lebih dari 100 karakter.');
+			return;
 		}
 
 	}
@@ -42,8 +42,7 @@ class Main_Handler {
 		if (strlen($this->message) <= 100) {
 
 			return true;
-		}
-		else {
+		} else {
 
 			return false;
 		}
