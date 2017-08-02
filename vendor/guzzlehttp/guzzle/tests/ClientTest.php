@@ -138,7 +138,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client(['defaults' => ['allow_redirects' => false]]);
         $this->assertFalse($client->getDefaultOption('allow_redirects'));
         $this->assertEquals(
-            ['User-Agent' => Client::getDefaultUserAgent()],
+            ['UserAccount-Agent' => Client::getDefaultUserAgent()],
             $client->getDefaultOption('headers')
         );
     }
@@ -147,7 +147,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $client = new Client();
         $this->assertEquals(
-            ['User-Agent' => Client::getDefaultUserAgent()],
+            ['UserAccount-Agent' => Client::getDefaultUserAgent()],
             $client->getDefaultOption('headers')
         );
     }
@@ -249,7 +249,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $request = $client->createRequest('GET', 'http://foo.com?a=b', [
             'headers' => ['foo' => 'custom', 'user-agent' => 'test']
         ]);
-        $this->assertEquals('test', $request->getHeader('User-Agent'));
+        $this->assertEquals('test', $request->getHeader('UserAccount-Agent'));
         $this->assertEquals('custom', $request->getHeader('Foo'));
     }
 
@@ -265,10 +265,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testDoesNotOverwriteExistingUA()
     {
         $client = new Client(['defaults' => [
-            'headers' => ['User-Agent' => 'test']
+            'headers' => ['UserAccount-Agent' => 'test']
         ]]);
         $this->assertEquals(
-            ['User-Agent' => 'test'],
+            ['UserAccount-Agent' => 'test'],
             $client->getDefaultOption('headers')
         );
     }

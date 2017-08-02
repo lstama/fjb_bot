@@ -102,7 +102,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
             'port' => 8081,
             'query' => 'a=1&b=2',
             'scheme' => 'http',
-            'user' => 'test'
+            'User_Account' => 'test'
         ), $url->getParts());
     }
 

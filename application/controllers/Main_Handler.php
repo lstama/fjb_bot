@@ -1,42 +1,69 @@
 <?php
 
-include 'User_Session.php';
+include_once 'Session.php';
+include_once 'FJB_Bot.php';
 include_once 'Sender.php';
 
-class Main_Handler {
+class Main_Handler extends Sender {
 
-	public $content;
-	public $session;
-
-	public function __construct($content) {
-
-		$this->content = $content;
-	}
+	private $user_account;
+	private $message;
 
 	public function handleReceivedMessage() {
 
-		if ($this->content['message'] == 'halo') {
+		if ($this->isMessageLengthValid()) {
 
-			$sender = new Sender;
-			$sender->sendReply('Hai '.$this->content['user']->username.'!');
+			#Default
+			if ($this->message == 'halo') {
+
+				$this->sendReply('Halo juga!');
+				return;
+			}
+
+			$session = $this->createSession();
+			if ($session->isLoggedOn()) {
+
+				$bot = new FJB_Bot;
+				$bot->setMessageNow($session->message);
+				$bot->setSessionNow($session->getLastSession());
+				$bot->setSession($session);
+				$bot->main();
+			}
+		} else {
+
+			$this->sendReply('Bot tidak dapat menerima pesan yang lebih dari 100 karakter.');
 			return;
 		}
 
-		$this->session = new User_Session($this->content);
+	}
 
-		if ($this->session->status === 'logged_on') {
+	private function isMessageLengthValid() {
 
-			$this->mainFunction();
+		if (strlen($this->message) <= 100) {
 
+			return true;
 		} else {
 
-			#Send authorize url
+			return false;
 		}
 	}
 
-	public function mainFunction() {
+	private function createSession() {
 
-		$sender = new Sender;
-		$sender->sendReply('Halo '.$this->session->logged_on_user.'!');
+		$session = new Session();
+		$session->setUserAccount($this->user_account);
+		$session->setMessage($this->message);
+		return $session;
 	}
+
+	public function setUserAccount($user_account) {
+
+		$this->user_account = $user_account;
+	}
+
+	public function setMessage($message) {
+
+		$this->message = $message;
+	}
+
 }
