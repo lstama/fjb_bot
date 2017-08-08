@@ -6,10 +6,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3fffaea5-9251-4b37-acb3-69f8c0391aea" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/application/models/dota_model.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/application/models/quiz_model.php" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Bot_Account.php" afterPath="$PROJECT_DIR$/application/controllers/Bot_Account.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Buy.php" afterPath="$PROJECT_DIR$/application/controllers/Buy.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Buy_Normal.php" afterPath="$PROJECT_DIR$/application/controllers/Buy_Normal.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Buy_Start.php" afterPath="$PROJECT_DIR$/application/controllers/Buy_Start.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Lapak.php" afterPath="$PROJECT_DIR$/application/controllers/Lapak.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controllers/Lapak_Details.php" afterPath="$PROJECT_DIR$/application/controllers/Lapak_Details.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/my_database.sql" afterPath="$PROJECT_DIR$/my_database.sql" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -26,76 +30,79 @@
       <file leaf-file-name="FJB_Bot.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controllers/FJB_Bot.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1122">
+            <state relative-caret-position="17">
               <caret line="66" column="31" lean-forward="false" selection-start-line="66" selection-start-column="31" selection-end-line="66" selection-end-column="31" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Main_Handler.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controllers/Main_Handler.php">
+      <file leaf-file-name="Buy_Normal.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Normal.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="714">
-              <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <state relative-caret-position="532">
+              <caret line="289" column="5" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="289" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Sender.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controllers/Sender.php">
+      <file leaf-file-name="Buy.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Buy.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="21" column="40" lean-forward="false" selection-start-line="21" selection-start-column="40" selection-end-line="21" selection-end-column="40" />
+            <state relative-caret-position="549">
+              <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="238">
-                <caret line="14" column="36" lean-forward="false" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
-                <folding />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Session.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controllers/Session.php">
+      <file leaf-file-name="Lapak.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Lapak.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="26" />
+            <state relative-caret-position="330">
+              <caret line="86" column="59" lean-forward="false" selection-start-line="86" selection-start-column="17" selection-end-line="86" selection-end-column="59" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Alamat.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controllers/Alamat.php">
+      <file leaf-file-name="Lapak_Details.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Lapak_Details.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="884">
-              <caret line="52" column="8" lean-forward="false" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="8" />
-              <folding>
-                <marker date="1501659515317" expanded="true" signature="7416:7417" ph="..." />
-              </folding>
+            <state relative-caret-position="209">
+              <caret line="81" column="0" lean-forward="true" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Create_Alamat.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controllers/Create_Alamat.php">
+      <file leaf-file-name="Buy_Nego.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Nego.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2176">
-              <caret line="128" column="19" lean-forward="false" selection-start-line="128" selection-start-column="19" selection-end-line="128" selection-end-column="19" />
-              <folding>
-                <marker date="1501659515324" expanded="true" signature="10582:10583" ph="..." />
-              </folding>
+            <state relative-caret-position="549">
+              <caret line="334" column="1" lean-forward="true" selection-start-line="334" selection-start-column="1" selection-end-line="334" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="my_database.sql" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/my_database.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="365">
+              <caret line="37" column="14" lean-forward="false" selection-start-line="37" selection-start-column="14" selection-end-line="37" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Buy_Start.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Start.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-267">
+              <caret line="118" column="0" lean-forward="true" selection-start-line="118" selection-start-column="0" selection-end-line="118" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -103,8 +110,8 @@
       <file leaf-file-name="Bot_Account.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controllers/Bot_Account.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="24" column="0" lean-forward="false" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+            <state relative-caret-position="442">
+              <caret line="26" column="56" lean-forward="false" selection-start-line="26" selection-start-column="56" selection-end-line="26" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -114,9 +121,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>user</find>
-      <find>provin</find>
-      <find>sendCity</find>
       <find>this-&gt;create_alamat_model</find>
       <find>selectAla</find>
       <find>this-&gt;buy_model</find>
@@ -144,6 +148,9 @@
       <find>model</find>
       <find>TODO</find>
       <find>nomor</find>
+      <find>salah</find>
+      <find>normal</find>
+      <find>deta</find>
     </findStrings>
     <replaceStrings>
       <replace>this-&gt;session-&gt;create_alamat_model</replace>
@@ -155,6 +162,7 @@
       <replace>-&gt;getContent()</replace>
       <replace>-&gt;createButton</replace>
       <replace>message</replace>
+      <replace>nego</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\xampp\htdocs\refactor\fjb_bot\application\controllers</dir>
@@ -180,24 +188,27 @@
         <option value="$PROJECT_DIR$/application/controllers/Features.php" />
         <option value="$PROJECT_DIR$/application/helpers/auth_helper.php" />
         <option value="$PROJECT_DIR$/application/controllers/FJB.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Buy.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Buy_Normal.php" />
         <option value="$PROJECT_DIR$/application/controllers/Keranjang.php" />
         <option value="$PROJECT_DIR$/application/models/buy_model.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Buy_Start.php" />
         <option value="$PROJECT_DIR$/application/controllers/Kaskus_Hooks.php" />
         <option value="$PROJECT_DIR$/application/controllers/Authorize_Session.php" />
         <option value="$PROJECT_DIR$/application/controllers/Alamat.php" />
         <option value="$PROJECT_DIR$/application/controllers/Buy_Instant.php" />
         <option value="$PROJECT_DIR$/application/controllers/FJB_Bot.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Lapak.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Lapak_Details.php" />
         <option value="$PROJECT_DIR$/application/controllers/Create_Alamat.php" />
-        <option value="$PROJECT_DIR$/application/controllers/Bot_Account.php" />
         <option value="$PROJECT_DIR$/application/controllers/Session.php" />
         <option value="$PROJECT_DIR$/application/controllers/Main_Handler.php" />
         <option value="$PROJECT_DIR$/application/controllers/Sender.php" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/application/controllers/Buy.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Buy_Normal.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Nego.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Lapak.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Lapak_Details.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Bot_Account.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Buy_Start.php" />
+        <option value="$PROJECT_DIR$/application/controllers/Buy_Nego.php" />
+        <option value="$PROJECT_DIR$/my_database.sql" />
       </list>
     </option>
   </component>
@@ -445,12 +456,14 @@
       <workItem from="1501491534292" duration="351000" />
       <workItem from="1501550360535" duration="2499000" />
       <workItem from="1501645142641" duration="4440000" />
-      <workItem from="1501659548014" duration="890000" />
+      <workItem from="1501659548014" duration="1490000" />
+      <workItem from="1501729207821" duration="1798000" />
+      <workItem from="1502174119812" duration="8544000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="155688000" />
+    <option name="totallyTimeSpent" value="166630000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -460,6 +473,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32789317" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32649842" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -473,7 +487,6 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24961598" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Duplicates" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32649842" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -490,13 +503,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/application/controllers/Kaskus_Hooks.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/application/controllers/User_Account.php" />
     <entry file="file://$PROJECT_DIR$/application/controllers/Session.php">
       <provider selected="true" editor-type-id="text-editor">
@@ -596,7 +602,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_database.sql" />
     <entry file="file://$PROJECT_DIR$/application/config/hooks.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -648,32 +653,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Instant.php" />
-    <entry file="file://$PROJECT_DIR$/application/controllers/Buy.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
-          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Start.php" />
-    <entry file="file://$PROJECT_DIR$/application/controllers/Lapak.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2465">
-          <caret line="145" column="0" lean-forward="false" selection-start-line="145" selection-start-column="0" selection-end-line="145" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Lapak_Details.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1309">
-          <caret line="77" column="78" lean-forward="false" selection-start-line="77" selection-start-column="78" selection-end-line="77" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Normal.php" />
     <entry file="file://$PROJECT_DIR$/application/controllers/Alamat.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="884">
@@ -684,41 +663,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Create_Alamat.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2176">
-          <caret line="128" column="19" lean-forward="false" selection-start-line="128" selection-start-column="19" selection-end-line="128" selection-end-column="19" />
-          <folding>
-            <marker date="1501659515324" expanded="true" signature="10582:10583" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Bot_Account.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="0" lean-forward="false" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/application/controllers/Features.php" />
-    <entry file="file://$PROJECT_DIR$/application/controllers/FJB_Bot.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1122">
-          <caret line="66" column="31" lean-forward="false" selection-start-line="66" selection-start-column="31" selection-end-line="66" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controllers/Session.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/application/controllers/Authorize_Session.php" />
     <entry file="file://$PROJECT_DIR$/application/controllers/Main_Handler.php">
       <provider selected="true" editor-type-id="text-editor">
@@ -741,10 +686,100 @@
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="238">
-            <caret line="14" column="36" lean-forward="false" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
+            <caret line="14" column="33" lean-forward="false" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
             <folding />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Create_Alamat.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5848">
+          <caret line="344" column="85" lean-forward="false" selection-start-line="344" selection-start-column="80" selection-end-line="344" selection-end-column="85" />
+          <folding>
+            <marker date="1501659515324" expanded="true" signature="10582:10583" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/FJB_Bot.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="66" column="31" lean-forward="false" selection-start-line="66" selection-start-column="31" selection-end-line="66" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Session.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Normal.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="289" column="5" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="289" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Lapak.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="86" column="59" lean-forward="false" selection-start-line="86" selection-start-column="17" selection-end-line="86" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Bot_Account.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="26" column="56" lean-forward="false" selection-start-line="26" selection-start-column="56" selection-end-line="26" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Lapak_Details.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="81" column="0" lean-forward="true" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Buy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="549">
+          <caret line="58" column="0" lean-forward="true" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Start.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-267">
+          <caret line="118" column="0" lean-forward="true" selection-start-line="118" selection-start-column="0" selection-end-line="118" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controllers/Buy_Nego.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="549">
+          <caret line="334" column="1" lean-forward="true" selection-start-line="334" selection-start-column="1" selection-end-line="334" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/my_database.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="365">
+          <caret line="37" column="14" lean-forward="false" selection-start-line="37" selection-start-column="14" selection-end-line="37" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>

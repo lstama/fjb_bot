@@ -34,7 +34,8 @@ CREATE TABLE `buy` (
   `quantity` int(3) NOT NULL,
   `shipping_id` varchar(100) NOT NULL,
   `thread_id` varchar(100) NOT NULL,
-  `dest_id` varchar(100) NOT NULL
+  `dest_id` varchar(100) NOT NULL,
+  `offer_price` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

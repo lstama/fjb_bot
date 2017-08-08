@@ -83,10 +83,14 @@ class Lapak_Details extends FJB{
 		$post_id = $response['thread']['thread_id'];
 		$buttons = [
 			$this->session->createButton('/buy_start_' . $post_id, 'Beli'),
-			$this->session->createButton('/keranjang_tambah_' . $post_id, 'Tambah ke Keranjang'),
-			$this->session->createButton('back', 'Kembali Ke Pencarian'),
-			$this->session->createButton('/menu', 'Kembali Ke Menu Utama')
+			$this->session->createButton('/keranjang_tambah_' . $post_id, 'Tambah ke Keranjang')
 		];
+		if (in_array('2', $response['thread']['payment_mechanism'])){
+
+			array_push($buttons, $this->session->createButton('/buy_nego_' . $post_id, 'Nego'));
+		}
+		array_push($buttons, $this->session->createButton('back', 'Kembali Ke Pencarian'));
+		array_push($buttons, $this->session->createButton('/menu', 'Kembali Ke Menu Utama'));
 
 		$interactive = $this->session->createInteractive(null, null, null, $buttons);
 		$this->session->sendInteractiveMessage($interactive);

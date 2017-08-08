@@ -3,6 +3,7 @@
 include_once 'FJB.php';
 include_once 'Buy_Instant.php';
 include_once 'Buy_Normal.php';
+include_once 'Buy_Nego.php';
 
 class Buy_Start extends FJB {
 
@@ -16,6 +17,11 @@ class Buy_Start extends FJB {
 			case 'start':
 
 				$this->startBuy($message_suffix);
+				break;
+
+			case 'nego':
+
+				$this->startNego($message_suffix);
 				break;
 
 			default:
@@ -45,6 +51,14 @@ class Buy_Start extends FJB {
 				$buy_normal->setSessionNow($session_suffix);
 				$buy_normal->setSession($this->session);
 				$buy_normal->lastSessionSpecific();
+				break;
+
+			case 'nego':
+				$buy_nego = new Buy_Nego();
+				$buy_nego->setMessageNow($this->message_now);
+				$buy_nego->setSessionNow($session_suffix);
+				$buy_nego->setSession($this->session);
+				$buy_nego->lastSessionSpecific();
 				break;
 
 			default:
@@ -83,6 +97,38 @@ class Buy_Start extends FJB {
 				$buy_normal->setSessionNow($this->session_now);
 				$buy_normal->setSession($this->session);
 				$buy_normal->normalBuy();
+				break;
+
+			case 'not_found':
+				$this->sendThreadNotFoundDialog();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	public function startNego($thread_id){
+
+		$buy = $this->session->buy_model->find_buy($this->session->username);
+
+		if (empty($buy)) {
+
+			$this->session->buy_model->create_buy(['user' => $this->session->username]);
+		}
+
+		$this->session->buy_model->update_buy($this->session->username, ['thread_id' => $thread_id]);
+
+		$thread_type = $this->getThreadType($thread_id);
+
+		switch ($thread_type) {
+
+			case 'normal':
+				$buy_nego = new Buy_Nego();
+				$buy_nego->setMessageNow($this->message_now);
+				$buy_nego->setSessionNow($this->session_now);
+				$buy_nego->setSession($this->session);
+				$buy_nego->startNego();
 				break;
 
 			case 'not_found':

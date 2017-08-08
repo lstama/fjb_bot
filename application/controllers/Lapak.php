@@ -82,6 +82,7 @@ class Lapak extends FJB {
 		$multiple_interactive = [];
 		foreach ($response['item'] as $lapak) {
 
+			#TODO
 			if (!isset($lapak['payment_mechanism'])) continue;
 			if (!in_array('3', $lapak['payment_mechanism'])) continue;
 
@@ -102,7 +103,7 @@ class Lapak extends FJB {
 
 		}
 
-		if ($response["total_pages"] == 0) {
+		if (($response["total_pages"] == 0) or ($page == $response['total_pages'] and $counter == 0)) {
 
 			$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama.')];
 			$title = "Barang Tidak Ditemukan";

@@ -2,14 +2,13 @@
 
 include_once 'Buy.php';
 
-class Buy_Normal extends Buy {
+class Buy_Nego extends Buy {
 
-
-	public function normalBuy() {
+	public function startNego(){
 
 		$result = $this->sendDaftarAlamat();
 		if (! $result) return;
-		$this->session->setLastSession('buy_normal_alamat');
+		$this->session->setLastSession('buy_nego_alamat');
 		return;
 	}
 
@@ -26,6 +25,10 @@ class Buy_Normal extends Buy {
 
 			case 'quantity':
 				$this->selectQuantity();
+				break;
+
+			case 'price':
+				$this->selectPrice();
 				break;
 
 			case 'shipping':
@@ -59,14 +62,14 @@ class Buy_Normal extends Buy {
 			];
 			$this->session->buy_model->update_buy($this->session->username, $alamat);
 
-			$this->session->setLastSession('buy_normal_quantity');
+			$this->session->setLastSession('buy_nego_quantity');
 			$this->sendQuantity();
 			return;
 		}
 
 		$this->session->sendReply('Alamat tidak valid.');
 
-		$this->normalBuy();
+		$this->startNego();
 		return;
 	}
 
@@ -95,7 +98,39 @@ class Buy_Normal extends Buy {
 		$result = $this->checkQuantity();
 		if ($result == 'failed') return;
 
-		$this->session->setLastSession('buy_normal_shipping');
+		$this->session->setLastSession('buy_nego_price');
+		$this->sendPrice();
+		return;
+	}
+
+	public function sendPrice(){
+
+		$result = $this->session->buy_model->find_buy($this->session->username);
+		$barang = $this->getBarang($result['thread_id']);
+
+		$quantity = $result['quantity'];
+		$price = $barang['thread']['discounted_price'];
+		$total_price = $this->toRupiah($quantity * $price);
+		$text = "Silakan masukkan harga yang anda tawarkan.\nHarga asli adalah : " . $total_price . "\n";
+		$text .= '(' . $quantity . ' x ' . $this->toRupiah($price) . ')';
+
+		$this->session->sendMessage($text);
+	}
+
+	public function selectPrice() {
+
+		$jumlah = $this->session->message;
+
+		if ((!is_numeric($jumlah)) or ($jumlah < 1)) {
+
+			$this->session->sendMessage('Hatga tidak valid.');
+			$this->sendPrice();
+			return;
+		}
+
+		$offer_price = ['offer_price' => $jumlah];
+		$this->session->buy_model->update_buy($this->session->username, $offer_price);
+		$this->session->setLastSession('buy_nego_shipping');
 		$this->sendShipping();
 		return;
 	}
@@ -189,11 +224,11 @@ class Buy_Normal extends Buy {
 		}
 
 		$this->session->buy_model->update_buy($this->session->username, ['shipping_id' => $choice]);
-		$this->session->setLastSession('buy_normal_confirmation');
-		$this->sendNormalConfirmation($jenis_jasa);
+		$this->session->setLastSession('buy_nego_confirmation');
+		$this->sendNegoConfirmation($jenis_jasa);
 	}
 
-	public function sendNormalConfirmation($jasa) {
+	public function sendNegoConfirmation($jasa) {
 
 		$result = $this->session->buy_model->find_buy($this->session->username);
 
@@ -207,7 +242,7 @@ class Buy_Normal extends Buy {
 		$this->displayJasaPengiriman($jasa);
 
 		$price = $barang['thread']['discounted_price'];
-		$total_price = $result['quantity'] * $price;
+		$total_price = $result['offer_price'];
 		$biaya = 'Total barang : ' . $result['quantity'];
 		$biaya .= "\nTotal harga barang : " . $this->toRupiah($total_price);
 		$biaya .= "\nBiaya pengiriman : " . $this->toRupiah($jasa['method']['cost']);
@@ -217,7 +252,7 @@ class Buy_Normal extends Buy {
 
 		$buttons = [
 			$this->session->createButton('ya', 'Ya'),
-			$this->session->createButton('/buy_start_' . $result['thread_id'], 'Ubah Data'),
+			$this->session->createButton('/buy_nego_' . $result['thread_id'], 'Ubah Data'),
 			$this->session->createButton('/menu', 'Tidak')
 		];
 		$title = 'Apakah data di atas sudah benar?';
@@ -272,20 +307,29 @@ class Buy_Normal extends Buy {
 			$buy = $this->session->buy_model->find_buy($this->session->username);
 
 			$parameter = [
-				'buyer_name' => $buy['buyer_name'],
-				'buyer_phone' => $buy['buyer_phone'],
+//				'buyer_name' => $buy['buyer_name'],
+//				'buyer_phone' => $buy['buyer_phone'],
 				'quantity' => $buy['quantity'],
-				'tips' => '0',
 				'address_id' => $buy['address_id'],
 				'shipping_agent' => $buy['shipping_id'],
+				'offer_price' => $buy['offer_price'],
 				'insurance' => '0'
 			];
 
-			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/buy_now', $parameter);
+			$response = $this->post('v1/fjb/lapak/' . $buy['thread_id'] . '/offers', $parameter);
 			if (!$response->isSuccess()) return;
 			$response = $response->getContent();
 
-			$this->sendCheckoutUrl($response, $buy);
+			$this->sendNegoPostSuccess();
 		}
+	}
+
+	private function sendNegoPostSuccess(){
+
+		$title = 'Harga Nego Berhasil Dipasang';
+		$caption = 'Silakan klik tombol di bawah untuk kembali ke menu utama.';
+		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
+		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
+		$this->session->sendInteractiveMessage($interactive);
 	}
 }

@@ -68,4 +68,42 @@ class Buy extends FJB {
 
 		return $response;
 	}
+
+	protected function sendDaftarAlamat() {
+
+		$response = $this->get('v1/fjb/location/addresses');
+		if (!$response->isSuccess()) return false;
+		$response = $response->getContent();
+
+		$counter = 0;
+		$multiple_interactive = [];
+		foreach ($response['data'] as $alamat) {
+
+			$counter += 1;
+			if ($counter == 11) break;
+
+			$name = $alamat['name'];
+			$buttons = [$this->session->createButton($alamat['id'], 'Pilih Alamat')];
+
+			if ($alamat['default']) {
+
+				$name .= '(Alamat Utama)';
+			}
+			$temp = $this->session->createInteractive(null, $name, $alamat['address'], $buttons);
+
+			array_push($multiple_interactive, $temp);
+
+		}
+
+		if ($counter == 0) {
+
+			$this->sendEmptyAlamatDialog();
+			return false;
+
+		}
+
+		$this->session->sendMessage("Silakan pilih alamat tujuan pengiriman.");
+		$this->session->sendMultipleInteractiveMessage($multiple_interactive);
+		return true;
+	}
 }
