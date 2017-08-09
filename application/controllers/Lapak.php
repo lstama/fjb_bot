@@ -25,7 +25,6 @@ class Lapak extends FJB {
 				$details->setSession($this->session);
 				$details->showDetails();
 				break;
-				break;
 
 			default:
 

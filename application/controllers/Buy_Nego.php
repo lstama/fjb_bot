@@ -4,6 +4,7 @@ include_once 'Buy.php';
 
 class Buy_Nego extends Buy {
 
+
 	public function startNego(){
 
 		$result = $this->sendDaftarAlamat();
@@ -331,5 +332,25 @@ class Buy_Nego extends Buy {
 		$buttons = [$this->session->createButton('/menu', 'Kembali ke Menu Utama')];
 		$interactive = $this->session->createInteractive(null, $title, $caption, $buttons);
 		$this->session->sendInteractiveMessage($interactive);
+	}
+
+	public function sendNegoCheckoutUrl($offer_id) {
+
+		$response = $this->get('v1/fjb/offers/' . $offer_id);
+		if (!$response->isSuccess()) return;
+		$response = $response->getContent();
+
+		$parameter = [
+			'buyer_name' => $response['shipping']['location']['owner_name'],
+			'buyer_phone' => $response['shipping']['location']['owner_phone'],
+			'tips' => '0'
+		];
+
+		$response = $this->post('v1/fjb/checkouts/' . $offer_id, $parameter);
+		if (!$response->isSuccess()) return;
+		$response = $response->getContent();
+
+		$buy['thread_id'] = $offer_id;
+		$this->sendCheckoutUrl($response, $buy);
 	}
 }

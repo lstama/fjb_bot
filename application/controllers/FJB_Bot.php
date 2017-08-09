@@ -5,6 +5,7 @@ include_once 'Alamat.php';
 include_once 'Lapak.php';
 include_once 'Buy_Start.php';
 include_once 'Keranjang.php';
+include_once 'Nego.php';
 
 class FJB_Bot extends Features {
 
@@ -54,6 +55,15 @@ class FJB_Bot extends Features {
 				$keranjang->setSessionNow($this->session_now);
 				$keranjang->setSession($this->session);
 				$keranjang->main();
+				break;
+
+			case '/nego':
+
+				$nego = new Nego;
+				$nego->setMessageNow($message_suffix);
+				$nego->setSessionNow($this->session_now);
+				$nego->setSession($this->session);
+				$nego->main();
 				break;
 
 			default:
