@@ -1,9 +1,15 @@
-# CodeIgniter 2
-Open Source PHP Framework (originally from EllisLab)
+# Tested with:
 
-For more info, please refer to the user-guide at http://www.codeigniter.com/userguide2/  
-(also available within the download package for offline use)
+1. PHP : 5.6.30
 
-**WARNING:** *CodeIgniter 2.x is no longer under development and only receives security patches until October 31st, 2015.
-Please update your installation to the latest CodeIgniter 3.x version available
-(upgrade instructions [here](http://www.codeigniter.com/userguide3/installation/upgrade_300.html)).*
+2. Apache : 2.4.25
+
+3. MySQL : 10.1.21-MariaDB mariadb.org binary distribution
+
+MySQL database structure included as my_database.sql on root.
+
+# What you need to change:
+
+1. Bot_Account.php at applications/controllers
+
+2. routes.php at applications/config

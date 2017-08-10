@@ -155,7 +155,7 @@ class CI_Email {
 		$this->_headers		= array();
 		$this->_debug_msg	= array();
 
-		$this->_set_header('User-Agent', $this->useragent);
+		$this->_set_header('UserAccount-Agent', $this->useragent);
 		$this->_set_header('Date', $this->_set_date());
 
 		if ($clear_attachments !== FALSE)

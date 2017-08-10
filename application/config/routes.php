@@ -41,8 +41,8 @@
 $route['default_controller'] = "welcome";
 $route['404_override'] = '';
 
-$route['chat_hook'] = 'Kaskus_Hooks/hook';
-$route['main_hook'] = 'Kaskus_Hooks/main_hook';
+$route['chat_hook'] = 'Kaskus_Hooks/handleKaskusChatRequest';
+$route['main_hook'] = 'Kaskus_Hooks/handleKaskusWebRedirect';
 $route['info'] = 'Info';
 
 /* End of file routes.php */

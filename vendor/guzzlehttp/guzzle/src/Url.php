@@ -33,7 +33,7 @@ class Url
     {
         static $defaults = ['scheme' => null, 'host' => null,
             'path' => null, 'port' => null, 'query' => null,
-            'user' => null, 'pass' => null, 'fragment' => null];
+            'User_Account' => null, 'pass' => null, 'fragment' => null];
 
         if (false === ($parts = parse_url($url))) {
             throw new \InvalidArgumentException('Unable to parse malformed '
@@ -47,7 +47,7 @@ class Url
             $parts['query'] = Query::fromString($parts['query']);
         }
 
-        return new static($parts['scheme'], $parts['host'], $parts['user'],
+        return new static($parts['scheme'], $parts['host'], $parts['User_Account'],
             $parts['pass'], $parts['port'], $parts['path'], $parts['query'],
             $parts['fragment']);
     }
@@ -71,8 +71,8 @@ class Url
 
         if (!empty($parts['host'])) {
             $url .= '//';
-            if (isset($parts['user'])) {
-                $url .= $parts['user'];
+            if (isset($parts['User_Account'])) {
+                $url .= $parts['User_Account'];
                 if (isset($parts['pass'])) {
                     $url .= ':' . $parts['pass'];
                 }
@@ -181,7 +181,7 @@ class Url
     {
         return array(
             'scheme'   => $this->scheme,
-            'user'     => $this->username,
+            'User_Account' => $this->username,
             'pass'     => $this->password,
             'host'     => $this->host,
             'port'     => $this->port,
@@ -528,7 +528,7 @@ class Url
             return new static(
                 $this->scheme,
                 $parts['host'],
-                $parts['user'],
+                $parts['User_Account'],
                 $parts['pass'],
                 $parts['port'],
                 $parts['path'],

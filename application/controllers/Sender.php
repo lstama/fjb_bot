@@ -1,95 +1,128 @@
 <?php
 
 require 'vendor/autoload.php';
+
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 
-class Sender extends CI_Controller {
+include_once 'Bot_Account.php';
 
-	public function sendToChatApi($auth, $content_type, $body) {
+class Sender extends Bot_Account {
 
-    	$client = new Client(['http_errors' => false]);
-    	
-		$header["Content-Type"]  = $content_type;
-		$header["Authorization"] = $auth;
-		$result 		 		 = $client->post('https://api.obrol.id/api/v1/bot/send-mass', ['verify' => false, 'headers' => $header, 'body' => $body]);
-		
-		return $result;	
+	private $guzzle_client;
+	public $JID;
+
+	public function __construct() {
+
+		parent::__construct();
+		$this->guzzle_client = new Client(['http_errors' => false]);
 	}
 
-	public function requestPost($url, $headers, $body = null) {
+	public function sendInteractiveReply($message) {
 
-    	$client = new Client(['http_errors' => false]);
+		$data['interactive'] = $message;
+		$this->sendReply($data);
+	}
 
-		$result = $client->post($url, ['verify' => false, 'headers' => $headers, 'body' => $body]);
+	public function sendMultipleInteractiveReply($message) {
 
-		return $result;
-		
-	}      
-
-	public function requestGet($url, $headers, $query = null) {
-
-		$client = new Client(['http_errors' => false]);
-
-    	$result = $client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);	
-    	
-		return $result;
-	} 
+		$data['interactives'] = $message;
+		$this->sendReply($data);
+	}
 
 	public function sendReply($message) {
 
 		http_response_code(200);
 		header('Content-Type: application/json');
 		$data = ["body" => $message];
-		
-		echo json_encode($data);
+		$data = json_encode($data);
+
+		echo $data;
+	}
+
+	public function sendInteractiveMessage($message) {
+
+		$data['interactive'] = $message;
+		$this->sendMessage($data);
+	}
+
+	public function sendMultipleInteractiveMessage($message) {
+
+		$data['interactives'] = $message;
+		$this->sendMessage($data);
+	}
+
+	public function sendMessage($message) {
+
+		$auth = $this->basicAuthHeader();
+
+		$content_type = "application/json";
+
+		$body['id'] = $this->bot_id;
+		$recipients['body'] = $message;
+		$recipients['recipient'] = $this->JID;
+		$body['sendList'] = [$recipients];
+
+		$body = json_encode($body);
+
+		$this->sendToChatApi($auth, $content_type, $body);
+	}
+
+	public function basicAuthHeader() {
+
+		$string_to_encode = $this->bot_username . ':' . $this->bot_password;
+		$hashed_string = base64_encode($string_to_encode);
+
+		return 'Basic ' . $hashed_string;
+	}
+
+	public function sendToChatApi($auth, $content_type, $body) {
+
+		$header["Content-Type"] = $content_type;
+		$header["Authorization"] = $auth;
+		$option = ['verify' => false, 'headers' => $header, 'body' => $body];
+
+		$result = $this->guzzle_client->post($this->send_mass_api, $option);
+		return $result;
+	}
+
+	public function requestPost($url, $headers = null, $body = null) {
+
+		$result = $this->guzzle_client->post($url, ['verify' => false, 'headers' => $headers, 'body' => $body]);
+
+		return $result;
 
 	}
 
-	public function sendMessage($bot_account, $user, $message) {
+	public function requestGet($url, $headers = null, $query = null) {
 
-    	$auth = $this->basicAuthHeader($bot_account->username, $bot_account->password);
-		
-		$content_type  = "application/json";
+		$result = $this->guzzle_client->get($url, ['verify' => false, 'headers' => $headers, 'query' => $query]);
 
-		$body['id'] 	 		 = $bot_account->bot_id;
-		$recipients['body'] 	 = $message;
-		$recipients['recipient'] = $user->JID;
-		$body['sendList']		 = array($recipients);
-		$body 					 = json_encode($body);
-
-		$result = $this->sendToChatApi($auth, $content_type, $body);
-
+		return $result;
 	}
 
-	public function basicAuthHeader($username, $password) {
-    	
-    	$stringToEncode = $username . ':' . $password;
-    	$hashedString 	= base64_encode($stringToEncode);
-    	
-        return 'Basic ' . $hashedString;
+	public function createButton($reply, $label, $show = 'all') {
 
+		$b['reply'] = $reply;
+		$b['text'] = $label;
+		$b['show'] = $show;
+		$b['client'] = 'OTHER';
+
+		return $b;
 	}
 
-	public function button($reply, $label, $show = 'all') {
+	public function createInteractive($image = null, $title = null, $caption = null, $buttons = null, $placeholder = null) {
 
-    	$b['reply'] = $reply;
-    	$b['text']  = $label;
-    	$b['show']	= $show;
-    	$b['client']= 'OTHER';
+		if ($image != null) $i['image'] = $image;
+		if ($title != null) $i['title'] = $title;
+		if ($caption != null) $i['caption'] = $caption;
+		if ($buttons != null) $i['buttons'] = $buttons;
+		if ($placeholder != null) $i['placeholder'] = $placeholder;
 
-    	return $b;
+		return $i;
 	}
 
-	public function interactive($image = null, $title = null, $caption = null, $buttons = null, $placeholder = null) {
+	public function setJID($JID) {
 
-    	if ($image != null)       $i['image']          = $image;
-    	if ($title != null)       $i['title']          = $title;
-    	if ($caption != null)     $i['caption']        = $caption;
-    	if ($buttons != null)     $i['buttons']        = $buttons;
-    	if ($placeholder != null) $i['placeholder']    = $placeholder;
-
-    	return $i;
+		$this->JID = $JID;
 	}
 }

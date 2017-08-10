@@ -7,7 +7,7 @@ function create_menu(basepath)
 		'<td class="td" valign="top">' +
 
 		'<ul>' +
-		'<li><a href="'+base+'index.html">User Guide Home</a></li>' +
+		'<li><a href="'+base+'index.html">UserAccount Guide Home</a></li>' +
 		'<li><a href="'+base+'toc.html">Table of Contents Page</a></li>' +
 		'</ul>' +
 
@@ -32,7 +32,7 @@ function create_menu(basepath)
 			'<li><a href="'+base+'overview/getting_started.html">Getting Started</a></li>' +
 			'<li><a href="'+base+'overview/at_a_glance.html">CodeIgniter at a Glance</a></li>' +
 			'<li><a href="'+base+'overview/cheatsheets.html">CodeIgniter Cheatsheets</a></li>' +
-			'<li><a href="'+base+'overview/features.html">Supported Features</a></li>' +
+			'<li><a href="'+base+'overview/features.html">Supported Request</a></li>' +
 			'<li><a href="'+base+'overview/appflow.html">Application Flow Chart</a></li>' +
 			'<li><a href="'+base+'overview/mvc.html">Model-View-Controller</a></li>' +
 			'<li><a href="'+base+'overview/goals.html">Architectural Goals</a></li>' +
@@ -113,7 +113,7 @@ function create_menu(basepath)
 		'<li><a href="'+base+'libraries/typography.html">Typography Class</a></li>' +
 		'<li><a href="'+base+'libraries/unit_testing.html">Unit Testing Class</a></li>' +
 		'<li><a href="'+base+'libraries/uri.html">URI Class</a></li>' +
-		'<li><a href="'+base+'libraries/user_agent.html">User Agent Class</a></li>' +
+		'<li><a href="'+base+'libraries/user_agent.html">UserAccount Agent Class</a></li>' +
 		'<li><a href="'+base+'libraries/xmlrpc.html">XML-RPC Class</a></li>' +
 		'<li><a href="'+base+'libraries/zip.html">Zip Encoding Class</a></li>' +
 		'</ul>' +
