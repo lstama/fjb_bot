@@ -81,7 +81,6 @@ class Lapak extends FJB {
 		$multiple_interactive = [];
 		foreach ($response['item'] as $lapak) {
 
-			#TODO
 			if (!isset($lapak['payment_mechanism'])) continue;
 			if (!in_array('3', $lapak['payment_mechanism'])) continue;
 

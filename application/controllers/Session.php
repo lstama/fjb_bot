@@ -27,8 +27,9 @@ class Session extends Sender {
 	protected function initiateKaskusClient() {
 
 		$this->kaskus_client = new \Kaskus\KaskusClient($this->consumer_key, $this->consumer_secret, $this->kaskus_api);
-		#TODO : Delete this when in production.
-		$this->kaskus_client->setDefaultOption('verify', false);
+		//TODO : If guzzle error.
+		//not safe
+		//$this->kaskus_client->setDefaultOption('verify', false);
 	}
 
 	public function isLoggedOn() {
